@@ -1,17 +1,28 @@
 class tomcat (
-  $version = '7.0.32'
+  $version   = undef,
+  $user      = 'tomcat',
+  $group     = 'tomcat',
+  $basedir   = '/opt',
+  $workspace = '/root'
 ) {
-  $workdir = '/var/lib/puppet/workspace/tomcat'
-  file { $workdir:
-    ensure  => directory,
-    require => File['/var/lib/puppet/workspace']
+  if $version == undef {
+    fail('tomcat version parameter is required')
   }
-  include user, iptables
-  $basedir = '/opt'
-  $user    = 'tomcat'
-  $group   = 'tomcat'
-  realize( User[$user] )
+  file { "${workspace}/tomcat":
+    ensure  => directory,
+  }
   Class['tomcat'] -> Class['sunjdk']
-  include tomcat::install
-  include tomcat::config
+  $subdir  = "apache-tomcat-${version}"
+  class { 'tomcat::install':
+    version   => $version,
+    user      => $user,
+    group     => $group,
+    basedir   => $basedir,
+    workspace => $workspace,
+  }
+  class { 'tomcat::config':
+    version   => $version,
+    basedir   => $basedir,
+    workspace => $workspace,
+  }
 }

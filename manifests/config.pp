@@ -1,14 +1,18 @@
-class tomcat::config {
+class tomcat::config (
+  version => undef
+  basedir => undef
+) {
   # TODO: /etc/sysctl.conf changes
   # TODO: /etc/security/limits.conf changes
+  $subdir = "apache-tomcat-${version}"
   file { [
-    "${tomcat::basedir}/tomcat/conf/catalina.policy",
-    "${tomcat::basedir}/tomcat/conf/catalina.properties",
-    "${tomcat::basedir}/tomcat/conf/context.xml",
-    "${tomcat::basedir}/tomcat/conf/logging.properties",
-    "${tomcat::basedir}/tomcat/conf/server.xml",
-    "${tomcat::basedir}/tomcat/conf/tomcat-users.xml",
-    "${tomcat::basedir}/tomcat/conf/web.xml",
+    "${basedir}/${subdir}/conf/catalina.policy",
+    "${basedir}/${subdir}/conf/catalina.properties",
+    "${basedir}/${subdir}/conf/context.xml",
+    "${basedir}/${subdir}/conf/logging.properties",
+    "${basedir}/${subdir}/conf/server.xml",
+    "${basedir}/${subdir}/conf/tomcat-users.xml",
+    "${basedir}/${subdir}/conf/web.xml",
   ]:
     mode    => '0444',
   }

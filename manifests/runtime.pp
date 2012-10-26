@@ -1,18 +1,29 @@
-define tomcat::runtime () {
-  $user = $title
-  realize( User[$user] )
+define tomcat::runtime (
+  $version = undef,
+  $user    = undef,
+  $group   = undef,
+  $basedir = '/opt'
+) {
+  if $version == undef {
+    fail('tomcat::runtime version parameter is required')
+  }
+  if $user == undef {
+    fail('tomcat::runtime user parameter is required')
+  }
+  if $group == undef {
+    fail('tomcat::runtime group parameter is required')
+  }
   file { "/home/${user}/service/tomcat":
     ensure  => directory,
     mode    => '0755',
     owner   => $user,
-    group   => $tomcat::group,
-    require => User[$user],
+    group   => $group,
   }
   file { "/home/${user}/service/tomcat/run":
     ensure  => present,
     mode    => '0555',
     owner   => $user,
-    group   => $tomcat::group,
+    group   => $group,
     content => template('tomcat/run.erb'),
     require => File["/home/${user}/service/tomcat"],
   }
@@ -20,23 +31,24 @@ define tomcat::runtime () {
     ensure  => directory,
     mode    => '0755',
     owner   => $user,
-    group   => $tomcat::group,
+    group   => $group,
     require => File["/home/${user}/service/tomcat"],
   }
   file { "/home/${user}/service/tomcat/log/run":
     ensure  => present,
     mode    => '0555',
     owner   => $user,
-    group   => $tomcat::group,
+    group   => $group,
     content => template('tomcat/log_run.erb'),
     require => File["/home/${user}/service/tomcat/log"],
   }
-  $confdir = "${tomcat::basedir}/tomcat/conf"
+  $subdir  = "apache-tomcat-${version}"
+  $confdir = "${basedir}/${subdir}/conf"
   file { "/home/${user}/conf":
     ensure  => directory,
     mode    => '0755',
     owner   => $user,
-    group   => $tomcat::group,
+    group   => $group,
     require => User[$user],
   }
   file { 'default-catalina.policy':
@@ -88,5 +100,4 @@ define tomcat::runtime () {
     replace => false,
     require => File["/home/${user}/conf"],
   }
-  runit::user{ $user: group => $tomcat::group }
 }
