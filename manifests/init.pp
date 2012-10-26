@@ -3,16 +3,19 @@ class tomcat (
   $user      = 'tomcat',
   $group     = 'tomcat',
   $basedir   = '/opt',
-  $workspace = '/root'
+  $workspace = '/root/tomcat'
 ) {
   if $version == undef {
     fail('tomcat version parameter is required')
   }
-  file { "${workspace}/tomcat":
+  file { $workspace:
     ensure  => directory,
   }
+  exec { 'tomcat-basedir':
+    command => "/bin/mkdir -p ${basedir}",
+    creates => $basedir,
+  }
   Class['tomcat'] -> Class['sunjdk']
-  $subdir  = "apache-tomcat-${version}"
   class { 'tomcat::install':
     version   => $version,
     user      => $user,
@@ -23,6 +26,5 @@ class tomcat (
   class { 'tomcat::config':
     version   => $version,
     basedir   => $basedir,
-    workspace => $workspace,
   }
 }

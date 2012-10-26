@@ -26,19 +26,25 @@ class tomcat::install (
   }
   file { 'tomcat-tarball':
     ensure  => present,
-    path    => "${workspace}/tomcat/${tarball}",
+    path    => "${workspace}/${tarball}",
     mode    => '0444',
     source  => "puppet:///files/${tarball}",
-    require => File["${workspace}/tomcat"],
+    require => File[$workspace],
   }
   exec { 'tomcat-unpack':
     cwd         => $basedir,
-    command     => "/bin/tar -zxf '${workspace}/tomcat/${tarball}'",
-    require     => File['tomcat-tarball'],
+    command     => "/bin/tar -zxf '${workspace}/${tarball}'",
     creates     => "${basedir}/${subdir}",
+    notify      => [ Exec['tomcat-fix-ownership'] , Class['tomcat::config'] ],
+    require     => [ Exec['tomcat-basedir'], File['tomcat-tarball'] ],
+  }
+  exec { 'tomcat-fix-ownership':
+    command     => "/bin/chown -R ${user}:${group} ${basedir}/${subdir}",
+    refreshonly => true,
   }
   file { "${basedir}/tomcat":
     ensure  => link,
     target  => "${basedir}/${subdir}",
+    require => Exec['tomcat-basedir'],
   }
 }
