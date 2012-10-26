@@ -1,30 +1,44 @@
-class tomcat::install {
-  $workdir = $tomcat::workdir
-  $version = $tomcat::version
+class tomcat::install (
+  $version   = undef,
+  $user      = undef,
+  $group     = undef,
+  $basedir   = undef,
+  $workspace = undef
+) {
+  if $version == undef {
+    fail('tomcat::install version parameter required')
+  }
+  if $user == undef {
+    fail('tomcat::install user parameter required')
+  }
+  if $group == undef {
+    fail('tomcat::install group parameter required')
+  }
   $tarball = "apache-tomcat-${version}.tar.gz"
   $subdir  = "apache-tomcat-${version}"
-  # Assume we have a tarball
-  realize( Package['tar', 'gzip'] )
+  package { ['tar', 'gzip']:
+    ensure => installed,
+  }
   # defaults
   File {
-    owner => $tomcat::user,
-    group => $tomcat::group,
+    owner => $user,
+    group => $group,
   }
   file { 'tomcat-tarball':
     ensure  => present,
-    path    => "${workdir}/${tarball}",
+    path    => "${workspace}/tomcat/${tarball}",
     mode    => '0444',
     source  => "puppet:///files/${tarball}",
-    require => File[$workdir],
+    require => File["${workspace}/tomcat"],
   }
   exec { 'tomcat-unpack':
-    cwd         => $tomcat::basedir,
-    command     => "/bin/tar -zxf '${workdir}/${tarball}'",
+    cwd         => $basedir,
+    command     => "/bin/tar -zxf '${workspace}/tomcat/${tarball}'",
     require     => File['tomcat-tarball'],
-    creates     => "${tomcat::basedir}/${subdir}",
+    creates     => "${basedir}/${subdir}",
   }
-  file { "${tomcat::basedir}/tomcat":
+  file { "${basedir}/tomcat":
     ensure  => link,
-    target  => "${tomcat::basedir}/${subdir}",
+    target  => "${basedir}/${subdir}",
   }
 }
