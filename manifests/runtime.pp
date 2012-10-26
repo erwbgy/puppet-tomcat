@@ -100,4 +100,5 @@ define tomcat::runtime (
     replace => false,
     require => File["/home/${user}/conf"],
   }
+  iptables::allow{ "tomcat-http-${user}": port => '8080', protocol => 'tcp' }
 }
