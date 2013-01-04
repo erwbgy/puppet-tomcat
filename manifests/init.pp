@@ -47,8 +47,8 @@ class tomcat (
   }
 
   create_resources(
-    'tomcat::config_file', 
+    'tomcat::config_file',
     $config_files,
     { user => $user, group => $group, product_dir => $product_dir }
-  )  
+  )
 }

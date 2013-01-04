@@ -10,7 +10,7 @@ define tomcat::service (
 ) {
   $product_dir = "${basedir}/apache-tomcat-${version}"
   runit::service { "${user}-apache-tomcat":
-    service     => $product,
+    service     => 'tomcat',
     user        => $user,
     group       => $group,
   }
@@ -19,7 +19,7 @@ define tomcat::service (
     mode    => '0555',
     owner   => $user,
     group   => $group,
-    content => template("tomcat/run.erb"),
+    content => template('tomcat/run.erb'),
     require => File["${basedir}/${user}/runit/tomcat}"],
   }
   file { "${basedir}/${user}/service/tomcat":
