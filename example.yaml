@@ -1,0 +1,23 @@
+tomcat:
+  tomcat1:
+    basedir: /apps
+    config_files:
+      server.xml:
+        source: 'puppet:///files/tomcat/dev/server.xml'
+    extra_jars:
+      - postgresql-9.2-1002.jdbc4.jar
+    group: tomcat
+    java_home: /usr/java/jdk1.7.0_07
+    version: 7.0.32
+  tomcat2:
+    basedir: /apps
+    config_files:
+      server.xml:
+        source: 'puppet:///files/tomcat/dev/server.xml'
+      tomcat-users.xml:
+        source: 'puppet:///files/tomcat/dev2/tomcat-users.xml'
+    extra_jars:
+      - mysql-connector-java-5.1.21.jar
+    group: tomcat
+    java_home: /usr/java/jdk1.7.0_07
+    version: 7.0.32

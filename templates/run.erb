@@ -1,8 +1,8 @@
 #!/bin/bash
 exec 2>&1
-export CATALINA_HOME=<%= scope.lookupvar('tomcat::basedir') %>/tomcat
-export CATALINA_BASE=$HOME
+export CATALINA_HOME=<%= @product_dir %>/tomcat
+export CATALINA_BASE=<%= @basedir %>
 mkdir -p $CATALINA_BASE/temp
-export CATALINA_OPTS="-Xms1024m -Xmx2048m"
-export JAVA_HOME=/usr/java/latest
+export CATALINA_OPTS="-Xms<%= @min_mem %> -Xmx<%= @max_mem %> <%= @java_opts %>"
+export JAVA_HOME=<%= @java_home %>
 exec $CATALINA_HOME/bin/catalina.sh run

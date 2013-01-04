@@ -1,11 +1,9 @@
 name    'erwbgy-tomcat'
-version '0.0.1'
-source 'UNKNOWN'
+version '0.0.2'
+source 'https://github.com/erwbgy/puppet-tomcat.git'
 author 'erwbgy'
 license 'Apache License, Version 2.0'
-summary 'UNKNOWN'
-description 'UNKNOWN'
-project_page 'git.com:erwbgy/puppet-tomcat.git'
-
-## Add dependencies, if any:
-# dependency 'username/name', '>= 1.2.0'
+summary 'Run Tomcat instances under Runit'
+description 'Run Tomcat instances under Runit'
+project_page 'http://forge.puppetlabs.com/erwbgy/tomcat'
+dependency 'erwbgy/runit', '>= 0.2.1'

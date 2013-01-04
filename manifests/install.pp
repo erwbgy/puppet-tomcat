@@ -1,23 +1,17 @@
 class tomcat::install (
-  $version   = undef,
-  $user      = undef,
-  $group     = undef,
-  $basedir   = undef,
-  $workspace = undef
+  $version,
+  $user,
+  $group,
+  $basedir,
+  $workspace = '/root/tomcat'
 ) {
-  if $version == undef {
-    fail('tomcat::install version parameter required')
-  }
-  if $user == undef {
-    fail('tomcat::install user parameter required')
-  }
-  if $group == undef {
-    fail('tomcat::install group parameter required')
-  }
   $tarball = "apache-tomcat-${version}.tar.gz"
   $subdir  = "apache-tomcat-${version}"
-  package { ['tar', 'gzip']:
-    ensure => installed,
+  if ! defined(Package['tar']) {
+    package { 'tar': ensure => installed }
+  }
+  if ! defined(Package['gzip']) {
+    package { 'gzip': ensure => installed }
   }
   # defaults
   File {
@@ -28,7 +22,7 @@ class tomcat::install (
     ensure  => present,
     path    => "${workspace}/${tarball}",
     mode    => '0444',
-    source  => "puppet:///files/${tarball}",
+    source  => "puppet:///files/tomcat/${tarball}",
     require => File[$workspace],
   }
   exec { 'tomcat-unpack':

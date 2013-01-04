@@ -1,64 +1,54 @@
 class tomcat (
-  $version   = undef,
-  $user      = 'tomcat',
-  $group     = 'tomcat',
-  $basedir   = '/opt',
-  $workspace = '/root/tomcat',
-  $use_hiera = false
+  $version,
+  $bind_address = $::fqdn,
+  $config_files = {},
+  $extra_jars   = [],
+  $group        = 'tomcat',
+  $basedir      = '/home',
+  $java_home    = '/usr/java/latest',
+  $java_opts    = '',
+  $min_mem      = '1024m',
+  $max_mem      = '2048m',
+  $workspace    = '/root/tomcat',
 ) {
-  if $use_hiera {
-    $tomcat = hiera['tomcat']
-    if $tomcat == undef {
-      fail('tomcat hash not found in hiera config')
-    }
-    $_version = $tomcat['version'] ? {
-      undef   => $version,
-      default => $version
-    }
-    $_user = $tomcat['user'] ? {
-      undef   => $user,
-      default => $user
-    }
-    $_group = $tomcat['group'] ? {
-      undef   => $group,
-      default => $group
-    }
-    $_basedir = $tomcat['basedir'] ? {
-      undef   => $basedir,
-      default => $basedir
-    }
-    $_workspace = $tomcat['workspace'] ? {
-      undef   => $workspace,
-      default => $workspace
-    }
+  $user        = $title
+  $product_dir = "${basedir}/${user}/apache-tomcat-${version}"
+
+  if ! defined(File["/etc/runit/${user}"]) {
+    runit::user { $user: group => $group }
   }
-  else {
-    $_version   = $version
-    $_user      = $user
-    $_group     = $group
-    $_basedir   = $basedir
-    $_workspace = $workspace
+
+  tomcat::install { "${user}-apache-tomcat":
+    version     => "apache-tomcat-${version}",
+    user        => $user,
+    group       => $group,
+    basedir     => $basedir,
+    workspace   => $workspace,
   }
-  if $_version == undef {
-    fail('tomcat version parameter is required')
+
+  $file_paths = prefix($extra_jars, "${product_dir}/")
+  tomcat::extra_jars { $file_paths:
+    product_dir => $product_dir,
+    destination => "${product_dir}/lib",
+    user        => $user,
+    group       => $group,
+    require     => File[$product_dir],
   }
-  file { $_workspace:
-    ensure  => directory,
+
+  tomcat::service{ "${user}-apache-tomcat":
+    user      => $user,
+    group     => $group,
+    version   => $version,
+    basedir   => $basedir,
+    java_home => $java_home,
+    java_opts => $java_opts,
+    min_mem   => $min_mem,
+    max_mem   => $max_mem,
   }
-  exec { 'tomcat-basedir':
-    command => "/bin/mkdir -p ${_basedir}",
-    creates => $_basedir,
-  }
-  #Class['tomcat'] -> Class['sunjdk']
-  class { 'tomcat::install':
-    version   => $_version,
-    user      => $_user,
-    group     => $_group,
-    basedir   => $_basedir,
-    workspace => $_workspace,
-  }
-  class { 'tomcat::config':
-    version   => $_version,
-    basedir   => $_basedir,
-  }
+
+  create_resources(
+    'tomcat::config_file', 
+    $config_files,
+    { user => $user, group => $group, product_dir => $product_dir }
+  )  
 }

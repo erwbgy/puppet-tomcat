@@ -1,4 +1,4 @@
 #!/bin/bash
-LOGDIR=/home/<%= scope.lookupvar('user') %>/logs/tomcat
+LOGDIR=<%= @basedir %>/logs/tomcat
 mkdir -p $LOGDIR
 exec svlogd -tt $LOGDIR

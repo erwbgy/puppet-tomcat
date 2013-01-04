@@ -1,6 +1,7 @@
 class tomcat::config (
-  $version = undef,
-  $basedir = undef
+  $user,
+  $version,
+  $basedir,
 ) {
   # TODO: /etc/sysctl.conf changes
   # TODO: /etc/security/limits.conf changes
@@ -16,4 +17,5 @@ class tomcat::config (
   ]:
     mode    => '0444',
   }
+  iptables::allow{ "tomcat-http-${user}": port => '8080', protocol => 'tcp' }
 }
