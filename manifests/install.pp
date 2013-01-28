@@ -1,4 +1,4 @@
-class tomcat::install (
+define tomcat::install (
   $version,
   $user,
   $group,
@@ -17,6 +17,9 @@ class tomcat::install (
   File {
     owner => $user,
     group => $group,
+  }
+  if ! defined(File[$basedir]) {
+    file { $basedir: ensure => directory, mode => '0755' }
   }
   file { 'tomcat-tarball':
     ensure  => present,

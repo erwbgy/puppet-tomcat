@@ -3,7 +3,6 @@ define tomcat::extra_jars (
   $destination,
   $user,
   $group,
-  $home,
 ) {
   $jar_file = regsubst($title, "^${product_dir}/", '')
   file { "${destination}/${jar_file}":

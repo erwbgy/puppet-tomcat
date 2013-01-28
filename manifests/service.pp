@@ -13,6 +13,7 @@ define tomcat::service (
     service     => 'tomcat',
     user        => $user,
     group       => $group,
+    home        => $basedir,
   }
   file { "${basedir}/${user}/runit/tomcat/run":
     ensure  => present,
