@@ -11,26 +11,32 @@ Example hiera config:
 
     tomcat:
       tomcat1:
-        basedir: /apps
+        basedir: '/apps/tomcat1'
+        bind_address: %{ipaddress_eth0}
         config_files:
           server.xml:
-            source: 'puppet:///files/tomcat/dev/server.xml'
+            source: 'puppet:///files/tomcat/dev1/server.xml'
         extra_jars:
           - postgresql-9.2-1002.jdbc4.jar
         group: tomcat
         java_home: /usr/java/jdk1.7.0_07
+        java_opts: '-Xms1536m -Xmx1536m -XX:MaxPermSize=512m'
+        logdir: '/apps/tomcat1/logs'
         version: 7.0.32
       tomcat2:
-        basedir: /apps
+        basedir: '/apps/tomcat2'
         config_files:
           server.xml:
-            source: 'puppet:///files/tomcat/dev/server.xml'
+            source: 'puppet:///files/tomcat/dev2/server.xml'
           tomcat-users.xml:
             source: 'puppet:///files/tomcat/dev2/tomcat-users.xml'
         extra_jars:
           - mysql-connector-java-5.1.21.jar
         group: tomcat
         java_home: /usr/java/jdk1.7.0_07
+        logdir: '/apps/tomcat2/logs'
+        min_mem: '2048m'
+        max_mem: '2048m'
         version: 7.0.32
 
 ## Parameters
@@ -39,8 +45,7 @@ All product classes take following parameters:
 
 *title*: The user the Tomcat instance runs as
 
-*basedir*: The parent directory of all user instance directories. Default:
-'/home' and files will be created under '/home/$user'
+*basedir*: The base installation directory. Default: '/opt/tomcat'
 
 *bind_address*: The IP address listen sockets are bound to. Default: $::fqdn
 
@@ -59,9 +64,11 @@ All product classes take following parameters:
 
 *max_mem*: The maximum heap size allocated by the JVM. Default: 2048m
 
+*logdir*: The base log directory. Default: '/var/logs/tomcat'
+
 *version*: The version of the product to install (eg. 7.0.32). **Required**.
 
-*worksapce*: A temporary directory to unpack install tarballs into. Default:
+*workspace*: A temporary directory to unpack install tarballs into. Default:
 '/root/tomcat'
 
 ## Config files
@@ -69,8 +76,8 @@ All product classes take following parameters:
 Configuration files for each of the Tomcat instances can be delivered via
 Puppet.  
 
-For example a configuration files could be delivered using for instances
-running as the tomcat1 and tomcat2 users with:
+For example configuration files could be delivered using for instances running
+as the tomcat1 and tomcat2 users with:
 
     tomcat:
       tomcat1:
@@ -97,7 +104,7 @@ Place the product zip files (eg. 'apache-tomcat-7.0.32.tar.gz') under a
     [files]
     path /var/lib/puppet/files
 
-the put the zip files in /var/lib/puppet/files/tomcat.  Any files specified
+then put the zip files in /var/lib/puppet/files/tomcat.  Any files specified
 with the extra_jars or config_files options should also be placed in this
 directory.
 

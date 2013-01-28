@@ -1,25 +1,31 @@
 define tomcat::instance (
   $version,
+  $basedir      = '/opt/tomcat',
   $bind_address = $::fqdn,
   $config_files = {},
   $extra_jars   = [],
   $group        = 'tomcat',
-  $basedir      = '/home',
   $java_home    = '/usr/java/latest',
   $java_opts    = '',
+  $logdir       = '/var/log/tomcat',
   $min_mem      = '1024m',
   $max_mem      = '2048m',
   $workspace    = '/root/tomcat',
 ) {
   $user        = $title
-  $product_dir = "${basedir}/${user}/apache-tomcat-${version}"
+  $product     = 'apache-tomcat'
+  $product_dir = "${basedir}/product/${product}-${version}"
 
+  include runit
   if ! defined(File["/etc/runit/${user}"]) {
-    runit::user { $user: basedir => $basedir, group => $group }
+    runit::user { $user: 
+      basedir => $basedir,
+      group   => $group,
+    }
   }
 
-  tomcat::install { "${user}-apache-tomcat":
-    version     => "apache-tomcat-${version}",
+  tomcat::install { "${user}-${product}":
+    version     => "${product}-${version}",
     user        => $user,
     group       => $group,
     basedir     => $basedir,
@@ -35,15 +41,18 @@ define tomcat::instance (
     require     => File[$product_dir],
   }
 
-  tomcat::service { "${user}-apache-tomcat":
-    user      => $user,
-    group     => $group,
-    version   => $version,
-    basedir   => $basedir,
-    java_home => $java_home,
-    java_opts => $java_opts,
-    min_mem   => $min_mem,
-    max_mem   => $max_mem,
+  tomcat::service { "${user}-${product}":
+    basedir      => $basedir,
+    logdir       => $logdir,
+    product      => $product,
+    user         => $user,
+    group        => $group,
+    version      => $version,
+    java_home    => $java_home,
+    java_opts    => $java_opts,
+    bind_address => $bind_address,
+    min_mem      => $min_mem,
+    max_mem      => $max_mem,
   }
 
   create_resources(
