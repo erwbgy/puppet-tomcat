@@ -21,27 +21,28 @@ define tomcat::install (
   if ! defined(File[$basedir]) {
     file { $basedir: ensure => directory, mode => '0755' }
   }
-  file { 'tomcat-tarball':
-    ensure  => present,
-    path    => "${workspace}/${tarball}",
-    mode    => '0444',
-    source  => "puppet:///files/tomcat/${tarball}",
-    require => File[$workspace],
+  if ! defined(File["${workspace}/${tarball}"]) {
+    file { "${workspace}/${tarball}":
+      ensure  => present,
+      mode    => '0444',
+      source  => "puppet:///files/tomcat/${tarball}",
+      require => File[$workspace],
+    }
   }
-  exec { 'tomcat-unpack':
+  exec { "tomcat-unpack-${user}":
     cwd         => $basedir,
     command     => "/bin/tar -zxf '${workspace}/${tarball}'",
     creates     => "${basedir}/${subdir}",
-    notify      => [ Exec['tomcat-fix-ownership'] , Class['tomcat::config'] ],
-    require     => [ Exec['tomcat-basedir'], File['tomcat-tarball'] ],
+    notify      => Exec["tomcat-fix-ownership-${user}"],
+    require     => [ File[$basedir], File["${workspace}/${tarball}"] ],
   }
-  exec { 'tomcat-fix-ownership':
+  exec { "tomcat-fix-ownership-${user}":
     command     => "/bin/chown -R ${user}:${group} ${basedir}/${subdir}",
     refreshonly => true,
   }
   file { "${basedir}/tomcat":
     ensure  => link,
-    target  => "${basedir}/${subdir}",
-    require => Exec['tomcat-basedir'],
+    target  => $subdir,
+    require => File[$basedir],
   }
 }

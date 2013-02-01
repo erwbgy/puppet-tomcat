@@ -16,8 +16,14 @@ define tomcat::instance (
   $product     = 'apache-tomcat'
   $product_dir = "${basedir}/product/${product}-${version}"
 
+  if ! defined(File[$workspace]) {
+    file { $workspace:
+      ensure => directory,
+    }
+  }
+
   include runit
-  if ! defined(File["/etc/runit/${user}"]) {
+  if ! defined(Runit::User[$user]) {
     runit::user { $user: 
       basedir => $basedir,
       group   => $group,
@@ -25,7 +31,7 @@ define tomcat::instance (
   }
 
   tomcat::install { "${user}-${product}":
-    version     => "${product}-${version}",
+    version     => $version,
     user        => $user,
     group       => $group,
     basedir     => $basedir,

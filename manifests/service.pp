@@ -27,7 +27,7 @@ define tomcat::service (
     owner   => $user,
     group   => $group,
     content => template('tomcat/run.erb'),
-    require => File["${basedir}/runit/tomcat}"],
+    require => Runit::Service["${user}-${product}"],
   }
   file { "${basedir}/service/tomcat":
     ensure  => link,
@@ -35,6 +35,6 @@ define tomcat::service (
     owner   => $user,
     group   => $group,
     replace => false,
-    require => File["${basedir}/runit/tomcat/run"],
+    require => Runit::Service["${user}-${product}"],
   }
 }
