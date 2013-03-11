@@ -14,7 +14,7 @@ define tomcat::instance (
 ) {
   $user        = $title
   $product     = 'apache-tomcat'
-  $product_dir = "${basedir}/product/${product}-${version}"
+  $product_dir = "${basedir}/${product}-${version}"
 
   if ! defined(File[$workspace]) {
     file { $workspace:
@@ -66,4 +66,13 @@ define tomcat::instance (
     $config_files,
     { user => $user, group => $group, product_dir => $product_dir }
   )
+
+  file { [ "${product_dir}/webapps/docs",
+           "${product_dir}/webapps/examples", ]:
+    ensure  => absent,
+    recurse => true,
+    force   => true,
+    purge   => true,
+    backup  => false,
+  }
 }
