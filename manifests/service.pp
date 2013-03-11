@@ -18,7 +18,7 @@ define tomcat::service (
     logdir      => $logdir,
     user        => $user,
     group       => $group,
-    down        => true,
+    down        => false,
     timestamp   => false,
   }
   file { "${basedir}/runit/tomcat/run":
