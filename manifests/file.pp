@@ -1,11 +1,11 @@
 define tomcat::file (
+  $group,
   $product_dir,
   $source,
   $user,
-  $group,
   $content = undef,
-  $source  = undef,
   $mode    = '0440',
+  $source  = undef,
 ) {
   $filename = $title
   if defined($source) {

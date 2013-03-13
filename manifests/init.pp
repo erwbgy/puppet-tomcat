@@ -1,16 +1,16 @@
 class tomcat (
-  $version          = '7.0.37',
+  $version,
   $basedir          = '/opt/tomcat',
   $bind_address     = $::fqdn,
-  $files            = {},
-  $templates        = {},
   $down             = false,
+  $files            = {},
   $group            = 'tomcat',
+  $logdir           = '/var/log/tomcat',
   $java_home        = '/usr/java/latest',
   $java_opts        = '',
-  $logdir           = '/var/log/tomcat',
-  $min_mem          = '1024m',
   $max_mem          = '2048m',
+  $min_mem          = '1024m',
+  $templates        = {},
   $workspace        = '/root/tomcat',
 ) {
   $tomcat = hiera_hash('tomcat::instances', undef)

@@ -1,9 +1,9 @@
 define tomcat::install (
-  $version,
-  $user,
-  $group,
   $basedir,
-  $workspace = '/root/tomcat'
+  $group,
+  $user,
+  $version,
+  $workspace,
 ) {
   $tarball = "apache-tomcat-${version}.tar.gz"
   $subdir  = "apache-tomcat-${version}"

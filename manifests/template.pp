@@ -1,8 +1,8 @@
 define tomcat::template(
   $template,
-  $owner    = undef,
   $group    = undef,
   $mode     = undef,
+  $owner    = undef,
   $schedule = 'always',
 ) {
   file { $title:

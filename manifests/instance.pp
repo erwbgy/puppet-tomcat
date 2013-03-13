@@ -1,16 +1,16 @@
 define tomcat::instance (
-  $version          = $::tomcat::version,
   $basedir          = $::tomcat::basedir,
   $bind_address     = $::tomcat::bind_address,
-  $files            = $::tomcat::files,
-  $templates        = $::tomcat::templates,
   $down             = $::tomcat::down,
+  $files            = $::tomcat::files,
   $group            = $::tomcat::group,
   $java_home        = $::tomcat::java_home,
   $java_opts        = $::tomcat::java_opts,
   $logdir           = $::tomcat::logdir,
-  $min_mem          = $::tomcat::min_mem,
   $max_mem          = $::tomcat::max_mem,
+  $min_mem          = $::tomcat::min_mem,
+  $templates        = $::tomcat::templates,
+  $version          = $::tomcat::version,
   $workspace        = $::tomcat::workspace,
 ) {
   $user        = $title

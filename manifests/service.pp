@@ -1,16 +1,16 @@
 define tomcat::service (
   $basedir,
-  $logdir,
-  $product,
-  $user,
+  $bind_address,
+  $down,
   $group,
-  $version,
+  $logdir,
   $java_home,
   $java_opts,
-  $bind_address,
-  $min_mem,
   $max_mem,
-  $down,
+  $min_mem,
+  $product,
+  $user,
+  $version,
 ) {
   $product_dir = "${basedir}/${product}-${version}"
   runit::service { "${user}-${product}":
