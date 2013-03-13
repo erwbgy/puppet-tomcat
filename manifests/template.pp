@@ -5,7 +5,8 @@ define tomcat::template(
   $owner    = undef,
   $schedule = 'always',
 ) {
-  file { $title:
+  $filename = $title
+  file { "${product_dir}/${filename}":
     owner    => $owner,
     group    => $group,
     mode     => $mode,

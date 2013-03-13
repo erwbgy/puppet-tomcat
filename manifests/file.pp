@@ -9,7 +9,7 @@ define tomcat::file (
 ) {
   $filename = $title
   if defined($source) {
-    file { "${product_dir}/conf/${filename}":
+    file { "${product_dir}/${filename}":
       ensure  => present,
       owner   => $user,
       group   => $group,
@@ -19,7 +19,7 @@ define tomcat::file (
     }
   }
   elsif defined($content) {
-    file { "${product_dir}/conf/${filename}":
+    file { "${product_dir}/${filename}":
       ensure  => present,
       owner   => $user,
       group   => $group,

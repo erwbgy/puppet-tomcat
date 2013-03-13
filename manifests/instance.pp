@@ -39,13 +39,11 @@ define tomcat::instance (
     workspace   => $workspace,
   }
 
-  $file_paths = prefix($files, "${product_dir}/")
-  create_resources( 'tomcat::file', $file_paths,
+  create_resources( 'tomcat::file', $files,
     { user => $user, group => $group, product_dir => $product_dir }
   )
 
-  $template_paths = prefix($templates, "${product_dir}/")
-  create_resources( 'tomcat::template', $template_paths,
+  create_resources( 'tomcat::template', $templates,
     { user => $user, group => $group, product_dir => $product_dir }
   )
 
