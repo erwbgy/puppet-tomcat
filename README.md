@@ -62,6 +62,10 @@ Example hiera config:
 
 *mode*: The permissions to create files with (eg. 0444).
 
+*remove_docs*: Whether or not to remove the Tomcat docs under webapps. Default: true
+
+*remove_examples*: Whether or not to remove the Tomcat examples under webapps. Default: true
+
 *templates*: A hash of configuration templates to process and install - see below
 
 *version*: The version of the product to install (eg. 7.0.37). **Required**.

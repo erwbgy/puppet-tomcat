@@ -11,6 +11,8 @@ class tomcat (
   $max_mem          = '2048m',
   $min_mem          = '1024m',
   $mode             = undef,
+  $remove_docs      = true,
+  $remove_examples  = true,
   $templates        = {},
   $workspace        = '/root/tomcat',
 ) {

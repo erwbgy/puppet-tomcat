@@ -10,6 +10,8 @@ define tomcat::instance (
   $max_mem          = $::tomcat::max_mem,
   $min_mem          = $::tomcat::min_mem,
   $mode             = $::tomcat::mode,
+  $remove_docs      = $::tomcat::remove_docs,
+  $remove_examples  = $::tomcat::remove_examples,
   $templates        = $::tomcat::templates,
   $version          = $::tomcat::version,
   $workspace        = $::tomcat::workspace,
@@ -68,13 +70,26 @@ define tomcat::instance (
     }
   )
 
-  file { [ "${product_dir}/webapps/docs",
-           "${product_dir}/webapps/examples", ]:
-    ensure  => absent,
-    recurse => true,
-    force   => true,
-    purge   => true,
-    backup  => false,
+  if $remove_docs {
+    file { "${product_dir}/webapps/docs":
+      ensure  => absent,
+      recurse => true,
+      force   => true,
+      purge   => true,
+      backup  => false,
+      require => Exec["tomcat-unpack-${user}"],
+    }
+  }
+  
+  if $remove_examples {
+    file { "${product_dir}/webapps/examples":
+      ensure  => absent,
+      recurse => true,
+      force   => true,
+      purge   => true,
+      backup  => false,
+      require => Exec["tomcat-unpack-${user}"],
+    }
   }
 
   tomcat::service { "${user}-${product}":
