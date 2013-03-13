@@ -5,7 +5,6 @@ class tomcat (
   $files            = {},
   $templates        = {},
   $down             = false,
-  $extra_jars       = [],
   $group            = 'tomcat',
   $java_home        = '/usr/java/latest',
   $java_opts        = '',

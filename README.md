@@ -10,17 +10,16 @@ The recommended usage is to place the configuration is hiera and just:
 Example hiera config:
 
     tomcat::files:
-      server.xml:
+      conf/server.xml:
         mode:     '0440'
         source:   'puppet:///files/tomcat/myapp/server.xml'
-    
+      lib/postgresql-9.2-1002.jdbc4.jar:
+        source:   'puppet:///files/jdbc/postgresql-9.2-1002.jdbc4.jar'
+
     tomcat::templates:
-      tomcat-users.xml:
+      conf/tomcat-users.xml:
         mode:     '0440'
         template: '/var/lib/puppet/files/tomcat/myapp/tomcat-users.xml.erb'
-    
-    tomcat::extra_jars:
-      - 'postgresql-9.2-1002.jdbc4.jar'
     
     tomcat::group:     'tomcat'
     
@@ -45,8 +44,6 @@ Example hiera config:
 *basedir*: The base installation directory. Default: '/opt/tomcat'
 
 *bind_address*: The IP address listen sockets are bound to. Default: $::fqdn
-
-*extra_jars*: Additional jar files to be placed in the lib directory
 
 *files*: A hash of configuration files to install - see below
 
@@ -109,6 +106,9 @@ installation is '/opt/tomcat/apache-tomcat-7.0.37' then the full path to the
 'tomcat-users.xml' file would be
 '/opt/tomcat/apache-tomcat-7.0.37/conf/tomcat-users.xml'.
 
+Note that the path specified by the 'template' parameter is on the Puppet
+master.
+
 ## Product files
 
 Place the product zip files (eg. 'apache-tomcat-7.0.32.tar.gz') under a
@@ -119,8 +119,7 @@ Place the product zip files (eg. 'apache-tomcat-7.0.32.tar.gz') under a
     path /var/lib/puppet/files
 
 then put the zip files in /var/lib/puppet/files/tomcat.  Any files specified
-with the extra_jars or config_files options should also be placed in this
-directory.
+with the 'files' parameter can also be placed in this directory.
 
 ## Support
 

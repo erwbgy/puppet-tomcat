@@ -1,15 +1,14 @@
-tomcat::config_files:
+tomcat::files:
   conf/server.xml:
     mode:     '0440'
     source:   'puppet:///files/tomcat/myapp/server.xml'
+  lib/postgresql-9.2-1002.jdbc4.jar:
+    source:   'puppet:///files/jdbc/postgresql-9.2-1002.jdbc4.jar'
 
-tomcat::config_templates:
+tomcat::templates:
   conf/tomcat-users.xml:
     mode:     '0440'
     template: '/var/lib/puppet/files/tomcat/myapp/tomcat-users.xml.erb'
-
-tomcat::extra_jars:
-  - 'postgresql-9.2-1002.jdbc4.jar'
 
 tomcat::group:     'tomcat'
 

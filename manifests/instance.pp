@@ -5,7 +5,6 @@ define tomcat::instance (
   $files            = $::tomcat::files,
   $templates        = $::tomcat::templates,
   $down             = $::tomcat::down,
-  $extra_jars       = $::tomcat::extra_jars,
   $group            = $::tomcat::group,
   $java_home        = $::tomcat::java_home,
   $java_opts        = $::tomcat::java_opts,
@@ -40,30 +39,6 @@ define tomcat::instance (
     workspace   => $workspace,
   }
 
-  $file_paths = prefix($extra_jars, "${product_dir}/")
-  tomcat::extra_jars { $file_paths:
-    product_dir => $product_dir,
-    destination => "${product_dir}/lib",
-    user        => $user,
-    group       => $group,
-    require     => File[$product_dir],
-  }
-
-  tomcat::service { "${user}-${product}":
-    basedir      => $basedir,
-    logdir       => $logdir,
-    product      => $product,
-    user         => $user,
-    group        => $group,
-    version      => $version,
-    java_home    => $java_home,
-    java_opts    => $java_opts,
-    bind_address => $bind_address,
-    min_mem      => $min_mem,
-    max_mem      => $max_mem,
-    down         => $down,
-  }
-
   $file_paths = prefix($files, "${product_dir}/")
   create_resources( 'tomcat::file', $file_paths,
     { user => $user, group => $group, product_dir => $product_dir }
@@ -82,4 +57,20 @@ define tomcat::instance (
     purge   => true,
     backup  => false,
   }
+
+  tomcat::service { "${user}-${product}":
+    basedir      => $basedir,
+    logdir       => $logdir,
+    product      => $product,
+    user         => $user,
+    group        => $group,
+    version      => $version,
+    java_home    => $java_home,
+    java_opts    => $java_opts,
+    bind_address => $bind_address,
+    min_mem      => $min_mem,
+    max_mem      => $max_mem,
+    down         => $down,
+  }
+
 }
