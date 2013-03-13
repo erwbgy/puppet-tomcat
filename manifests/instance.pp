@@ -64,15 +64,17 @@ define tomcat::instance (
     down         => $down,
   }
 
+  $config_file_paths = prefix($config_files, "${product_dir}/")
   create_resources(
     'tomcat::config::file',
-    $config_files,
+    $config_file_paths,
     { user => $user, group => $group, product_dir => $product_dir }
   )
 
+  $config_template_paths = prefix($config_templates, "${product_dir}/")
   create_resources(
     'tomcat::config::template',
-    $config_templates,
+    $config_template_paths,
     { user => $user, group => $group, product_dir => $product_dir }
   )
 

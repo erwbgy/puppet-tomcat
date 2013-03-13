@@ -118,6 +118,11 @@ tomcat2 instance would get the same tomcat-users.xml file.  Each instance would
 get their own server.xml file based on the template specified with instance
 variables (like basedir and logdir) substituted.
 
+All files are relative to the product installation.  For example if the product
+installation is '/opt/tomcat/apache-tomcat-7.0.37' then the full path to the
+'tomcat-users.xml' file would be
+'/opt/tomcat/apache-tomcat-7.0.37/conf/tomcat-users.xml'.
+
 ## Product files
 
 Place the product zip files (eg. 'apache-tomcat-7.0.32.tar.gz') under a
