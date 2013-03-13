@@ -9,41 +9,52 @@ The recommended usage is to place the configuration is hiera and just:
 
 Example hiera config:
 
-    tomcat:
+    tomcat::config_files:
+      server.xml:
+        mode:     '0440'
+        source:   'puppet:///files/tomcat/myapp/server.xml'
+    
+    tomcat::config_templates:
+      tomcat-users.xml:
+        mode:     '0440'
+        template: '/var/lib/puppet/files/tomcat/myapp/tomcat-users.xml.erb'
+    
+    tomcat::extra_jars:
+      - 'postgresql-9.2-1002.jdbc4.jar'
+    
+    tomcat::group:     'tomcat'
+    
+    tomcat::java_home: '/usr/java/jdk1.7.0_09'
+    
+    tomcat::java_opts: '-Xms1536m -Xmx1536m -XX:MaxPermSize=512m'
+    
+    tomcat::version:   '7.0.32'
+    
+    tomcat::instances:
       tomcat1:
-        basedir: '/apps/tomcat1'
-        bind_address: %{ipaddress_eth0}
-        config_files:
-          server.xml:
-            source: 'puppet:///files/tomcat/dev1/server.xml'
-        extra_jars:
-          - postgresql-9.2-1002.jdbc4.jar
-        group: tomcat
-        java_home: /usr/java/jdk1.7.0_07
-        java_opts: '-Xms1536m -Xmx1536m -XX:MaxPermSize=512m'
-        logdir: '/apps/tomcat1/logs'
-        version: 7.0.32
+        basedir:      '/apps/tomcat1'
+        bind_address: %{ipaddress_eth0_1}
+        logdir:       '/apps/tomcat1/logs'
       tomcat2:
-        basedir: '/apps/tomcat2'
-        config_files:
-          server.xml:
-            source: 'puppet:///files/tomcat/dev2/server.xml'
-          tomcat-users.xml:
-            source: 'puppet:///files/tomcat/dev2/tomcat-users.xml'
-        extra_jars:
-          - mysql-connector-java-5.1.21.jar
-        group: tomcat
-        java_home: /usr/java/jdk1.7.0_07
-        logdir: '/apps/tomcat2/logs'
-        min_mem: '2048m'
-        max_mem: '2048m'
-        version: 7.0.32
+        basedir:      '/apps/tomcat2'
+        bind_address: %{ipaddress_eth0_2}
+        logdir:       '/apps/tomcat2/logs'
 
-## Parameters
+## tomcat parameters
 
-All product classes take following parameters:
-
-*title*: The user the Tomcat instance runs as
+  $version      = '7.0.37',
+  $basedir      = '/opt/tomcat',
+  $bind_address = $::fqdn,
+  $config_files = {},
+  $down         = false,
+  $extra_jars   = [],
+  $group        = 'tomcat',
+  $java_home    = '/usr/java/latest',
+  $java_opts    = '',
+  $logdir       = '/var/log/tomcat',
+  $min_mem      = '1024m',
+  $max_mem      = '2048m',
+  $workspace    = '/root/tomcat',
 
 *basedir*: The base installation directory. Default: '/opt/tomcat'
 
@@ -51,9 +62,11 @@ All product classes take following parameters:
 
 *config_files*: A hash of configuration files to install - see below
 
+*config_templates*: A hash of configuration templates to process and install - see below
+
 *extra_jars*: Additional jar files to be placed in the lib directory
 
-*group*: The user''s primary group. Default: 'wso2',
+*group*: The user''s primary group. Default: 'tomcat',
 
 *java_home*: The base directory of the JDK installation to be used. Default:
 '/usr/java/latest',
@@ -66,34 +79,44 @@ All product classes take following parameters:
 
 *logdir*: The base log directory. Default: '/var/logs/tomcat'
 
-*version*: The version of the product to install (eg. 7.0.32). **Required**.
+*version*: The version of the product to install (eg. 7.0.37). **Required**.
 
 *workspace*: A temporary directory to unpack install tarballs into. Default:
 '/root/tomcat'
 
+## tomcat::instance parameters
+
+*title*: The user the Tomcat instance runs as
+
+Plus all of the parameters specified in 'tomcat parameters' above
+
 ## Config files
 
-Configuration files for each of the Tomcat instances can be delivered via
-Puppet.  
+Configuration files or configuration templates for each of the Tomcat instances
+can be delivered via Puppet.  The former are delivered as-is while the latter
+are processed as ERB templates before being delivered.
 
-For example configuration files could be delivered using for instances running
-as the tomcat1 and tomcat2 users with:
+For example configuration could be delivered using for instances running as the
+tomcat1 and tomcat2 users with:
 
+    tomcat::config_files:
+      conf/tomcat-users.xml:
+        source: 'puppet:///files/tomcat/dev/tomcat-users.xml'
+      
     tomcat:
       tomcat1:
-        version: 7.0.32
-        config_files:
-          server.xml:
-            source: 'puppet:///files/tomcat/dev1/server.xml'
-          tomcat-users.xml:
-            source: 'puppet:///files/tomcat/dev1/tomcat-users.xml'
+        config_templates:
+          conf/server.xml:
+            template: 'puppet:///files/tomcat/dev1/server.xml.erb'
       tomcat2:
-        version: 7.0.32
-        config_files:
-          server.xml:
-            source: 'puppet:///files/tomcat/dev2/server.xml'
-          tomcat-users.xml:
-            source: 'puppet:///files/tomcat/dev2/tomcat-users.xml'
+        config_templates:
+          conf/server.xml:
+            template: 'puppet:///files/tomcat/dev2/server.xml.erb'
+
+Values set at the tomcat level as set for all instances so both the tomcat1 and
+tomcat2 instance would get the same tomcat-users.xml file.  Each instance would
+get their own server.xml file based on the template specified with instance
+variables (like basedir and logdir) substituted.
 
 ## Product files
 
