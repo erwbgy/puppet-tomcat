@@ -80,7 +80,7 @@ define tomcat::instance (
       require => Exec["tomcat-unpack-${user}"],
     }
   }
-  
+
   if $remove_examples {
     file { "${product_dir}/webapps/examples":
       ensure  => absent,
