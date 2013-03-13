@@ -31,32 +31,144 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h3>Welcome to GitHub Pages.</h3>
+        <h1>puppet-tomcat</h1>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>Puppet module to install Apache Tomcat and run instances as Runit services
+under one or more users.</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<p>The recommended usage is to place the configuration is hiera and just:</p>
+
+<pre><code>include tomcat
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<p>Example hiera config:</p>
 
-<h3>Designer Templates</h3>
+<pre><code>tomcat::files:
+  conf/server.xml:
+    mode:     '0440'
+    source:   'puppet:///files/tomcat/myapp/server.xml'
+  lib/postgresql-9.2-1002.jdbc4.jar:
+    source:   'puppet:///files/jdbc/postgresql-9.2-1002.jdbc4.jar'
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+tomcat::templates:
+  conf/tomcat-users.xml:
+    mode:     '0440'
+    template: '/var/lib/puppet/files/tomcat/myapp/tomcat-users.xml.erb'
 
-<h3>Rather Drive Stick?</h3>
+tomcat::group:     'tomcat'
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+tomcat::java_home: '/usr/java/jdk1.7.0_09'
 
-<h3>Authors and Contributors</h3>
+tomcat::java_opts: '-Xms1536m -Xmx1536m -XX:MaxPermSize=512m'
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+tomcat::version:   '7.0.32'
 
-<h3>Support or Contact</h3>
+tomcat::instances:
+  tomcat1:
+    basedir:      '/apps/tomcat1'
+    bind_address: %{ipaddress_eth0_1}
+    logdir:       '/apps/tomcat1/logs'
+  tomcat2:
+    basedir:      '/apps/tomcat2'
+    bind_address: %{ipaddress_eth0_2}
+    logdir:       '/apps/tomcat2/logs'
+</code></pre>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<h2>tomcat parameters</h2>
+
+<p><em>basedir</em>: The base installation directory. Default: '/opt/tomcat'</p>
+
+<p><em>bind_address</em>: The IP address listen sockets are bound to. Default: $::fqdn</p>
+
+<p><em>files</em>: A hash of configuration files to install - see below</p>
+
+<p><em>group</em>: The user''s primary group. Default: 'tomcat',</p>
+
+<p><em>java_home</em>: The base directory of the JDK installation to be used. Default:
+'/usr/java/latest',</p>
+
+<p><em>java_opts</em>: Additional java command-line options to pass to the startup script</p>
+
+<p><em>logdir</em>: The base log directory. Default: '/var/logs/tomcat'</p>
+
+<p><em>min_mem</em>: The minimum heap size allocated by the JVM. Default: 1024m</p>
+
+<p><em>max_mem</em>: The maximum heap size allocated by the JVM. Default: 2048m</p>
+
+<p><em>mode</em>: The permissions to create files with (eg. 0444).</p>
+
+<p><em>remove_docs</em>: Whether or not to remove the Tomcat docs under webapps. Default: true</p>
+
+<p><em>remove_examples</em>: Whether or not to remove the Tomcat examples under webapps. Default: true</p>
+
+<p><em>templates</em>: A hash of configuration templates to process and install - see below</p>
+
+<p><em>version</em>: The version of the product to install (eg. 7.0.37). <strong>Required</strong>.</p>
+
+<p><em>workspace</em>: A temporary directory to unpack install tarballs into. Default:
+'/root/tomcat'</p>
+
+<h2>tomcat::instance parameters</h2>
+
+<p><em>title</em>: The user the Tomcat instance runs as</p>
+
+<p>Plus all of the parameters specified in 'tomcat parameters' above</p>
+
+<h2>Config files</h2>
+
+<p>Files or templates for each of the Tomcat instances can be delivered via
+Puppet.  The former are delivered as-is while the latter are processed as ERB
+templates before being delivered.</p>
+
+<p>For example configuration could be delivered using for instances running as the
+tomcat1 and tomcat2 users with:</p>
+
+<pre><code>tomcat::files:
+  conf/tomcat-users.xml:
+    source: 'puppet:///files/tomcat/dev/tomcat-users.xml'
+
+tomcat:
+  tomcat1:
+    templates:
+      conf/server.xml:
+        template: 'puppet:///files/tomcat/dev1/server.xml.erb'
+  tomcat2:
+    templates:
+      conf/server.xml:
+        template: 'puppet:///files/tomcat/dev2/server.xml.erb'
+</code></pre>
+
+<p>Values set at the tomcat level as set for all instances so both the tomcat1 and
+tomcat2 instance would get the same tomcat-users.xml file.  Each instance would
+get their own server.xml file based on the template specified with instance
+variables (like basedir and logdir) substituted.</p>
+
+<p>All files are relative to the product installation.  For example if the product
+installation is '/opt/tomcat/apache-tomcat-7.0.37' then the full path to the
+'tomcat-users.xml' file would be
+'/opt/tomcat/apache-tomcat-7.0.37/conf/tomcat-users.xml'.</p>
+
+<p>Note that the path specified by the 'template' parameter is on the Puppet
+master.</p>
+
+<h2>Product files</h2>
+
+<p>Place the product zip files (eg. 'apache-tomcat-7.0.32.tar.gz') under a
+'tomcat' directory of the 'files' file store.  For example if
+/etc/puppet/fileserver.conf has:</p>
+
+<pre><code>[files]
+path /var/lib/puppet/files
+</code></pre>
+
+<p>then put the zip files in /var/lib/puppet/files/tomcat.  Any files specified
+with the 'files' parameter can also be placed in this directory.</p>
+
+<h2>Support</h2>
+
+<p>License: Apache License, Version 2.0</p>
+
+<p>GitHub URL: <a href="https://github.com/erwbgy/puppet-tomcat">https://github.com/erwbgy/puppet-tomcat</a></p>
       </section>
     </div>
 
