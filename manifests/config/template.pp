@@ -1,4 +1,4 @@
-define tomcat:config::template(
+define tomcat::config::template(
   $template,
   $owner    = undef,
   $group    = undef,
