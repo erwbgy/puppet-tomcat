@@ -7,7 +7,7 @@ define tomcat::file (
   $source   = undef,
 ) {
   $filename = $title
-  if defined($source) {
+  if $source {
     file { "${product_dir}/${filename}":
       ensure   => present,
       owner    => $user,
@@ -17,7 +17,7 @@ define tomcat::file (
       require  => Exec["tomcat-unpack-${user}"],
     }
   }
-  elsif defined($content) {
+  elsif $content {
     file { "${product_dir}/${filename}":
       ensure   => present,
       owner    => $user,
