@@ -1,16 +1,26 @@
 define tomcat::template(
+  $basedir,
+  $bind_address,
+  $down,
+  $group,
+  $java_home,
+  $java_opts,
+  $logdir,
+  $max_mem,
+  $min_mem,
+  $mode,
+  $product_dir,
   $template,
-  $group    = undef,
-  $mode     = undef,
-  $owner    = undef,
-  $schedule = 'always',
+  $user,
+  $version,
+  $workspace,
 ) {
   $filename = $title
   file { "${product_dir}/${filename}":
-    owner    => $owner,
+    owner    => $user,
     group    => $group,
     mode     => $mode,
-    schedule => $schedule,
     content  => template($template),
+    require  => Exec["tomcat-unpack-${user}"],
   }
 }

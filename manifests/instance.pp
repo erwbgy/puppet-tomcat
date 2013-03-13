@@ -9,6 +9,7 @@ define tomcat::instance (
   $logdir           = $::tomcat::logdir,
   $max_mem          = $::tomcat::max_mem,
   $min_mem          = $::tomcat::min_mem,
+  $mode             = $::tomcat::mode,
   $templates        = $::tomcat::templates,
   $version          = $::tomcat::version,
   $workspace        = $::tomcat::workspace,
@@ -25,7 +26,7 @@ define tomcat::instance (
 
   include runit
   if ! defined(Runit::User[$user]) {
-    runit::user { $user: 
+    runit::user { $user:
       basedir => $basedir,
       group   => $group,
     }
@@ -40,11 +41,31 @@ define tomcat::instance (
   }
 
   create_resources( 'tomcat::file', $files,
-    { user => $user, group => $group, product_dir => $product_dir }
+    {
+      group       => $group,
+      mode        => $mode,
+      product_dir => $product_dir,
+      user        => $user,
+    }
   )
 
   create_resources( 'tomcat::template', $templates,
-    { user => $user, group => $group, product_dir => $product_dir }
+    {
+      basedir      => $basedir,
+      bind_address => $bind_address,
+      down         => $down,
+      group        => $group,
+      java_home    => $java_home,
+      java_opts    => $java_opts,
+      logdir       => $logdir,
+      max_mem      => $max_mem,
+      min_mem      => $min_mem,
+      mode         => $mode,
+      product_dir  => $product_dir,
+      user         => $user,
+      version      => $version,
+      workspace    => $workspace,
+    }
   )
 
   file { [ "${product_dir}/webapps/docs",

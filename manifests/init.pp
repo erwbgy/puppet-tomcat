@@ -10,6 +10,7 @@ class tomcat (
   $java_opts        = '',
   $max_mem          = '2048m',
   $min_mem          = '1024m',
+  $mode             = undef,
   $templates        = {},
   $workspace        = '/root/tomcat',
 ) {
