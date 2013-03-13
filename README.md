@@ -9,12 +9,12 @@ The recommended usage is to place the configuration is hiera and just:
 
 Example hiera config:
 
-    tomcat::config_files:
+    tomcat::files:
       server.xml:
         mode:     '0440'
         source:   'puppet:///files/tomcat/myapp/server.xml'
     
-    tomcat::config_templates:
+    tomcat::templates:
       tomcat-users.xml:
         mode:     '0440'
         template: '/var/lib/puppet/files/tomcat/myapp/tomcat-users.xml.erb'
@@ -42,29 +42,13 @@ Example hiera config:
 
 ## tomcat parameters
 
-  $version      = '7.0.37',
-  $basedir      = '/opt/tomcat',
-  $bind_address = $::fqdn,
-  $config_files = {},
-  $down         = false,
-  $extra_jars   = [],
-  $group        = 'tomcat',
-  $java_home    = '/usr/java/latest',
-  $java_opts    = '',
-  $logdir       = '/var/log/tomcat',
-  $min_mem      = '1024m',
-  $max_mem      = '2048m',
-  $workspace    = '/root/tomcat',
-
 *basedir*: The base installation directory. Default: '/opt/tomcat'
 
 *bind_address*: The IP address listen sockets are bound to. Default: $::fqdn
 
-*config_files*: A hash of configuration files to install - see below
-
-*config_templates*: A hash of configuration templates to process and install - see below
-
 *extra_jars*: Additional jar files to be placed in the lib directory
+
+*files*: A hash of configuration files to install - see below
 
 *group*: The user''s primary group. Default: 'tomcat',
 
@@ -73,11 +57,13 @@ Example hiera config:
 
 *java_opts*: Additional java command-line options to pass to the startup script
 
+*logdir*: The base log directory. Default: '/var/logs/tomcat'
+
 *min_mem*: The minimum heap size allocated by the JVM. Default: 1024m
 
 *max_mem*: The maximum heap size allocated by the JVM. Default: 2048m
 
-*logdir*: The base log directory. Default: '/var/logs/tomcat'
+*templates*: A hash of configuration templates to process and install - see below
 
 *version*: The version of the product to install (eg. 7.0.37). **Required**.
 
@@ -92,24 +78,24 @@ Plus all of the parameters specified in 'tomcat parameters' above
 
 ## Config files
 
-Configuration files or configuration templates for each of the Tomcat instances
-can be delivered via Puppet.  The former are delivered as-is while the latter
-are processed as ERB templates before being delivered.
+Files or templates for each of the Tomcat instances can be delivered via
+Puppet.  The former are delivered as-is while the latter are processed as ERB
+templates before being delivered.
 
 For example configuration could be delivered using for instances running as the
 tomcat1 and tomcat2 users with:
 
-    tomcat::config_files:
+    tomcat::files:
       conf/tomcat-users.xml:
         source: 'puppet:///files/tomcat/dev/tomcat-users.xml'
       
     tomcat:
       tomcat1:
-        config_templates:
+        templates:
           conf/server.xml:
             template: 'puppet:///files/tomcat/dev1/server.xml.erb'
       tomcat2:
-        config_templates:
+        templates:
           conf/server.xml:
             template: 'puppet:///files/tomcat/dev2/server.xml.erb'
 

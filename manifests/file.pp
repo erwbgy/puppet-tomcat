@@ -1,4 +1,4 @@
-define tomcat::config::file (
+define tomcat::file (
   $product_dir,
   $source,
   $user,

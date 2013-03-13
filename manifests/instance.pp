@@ -2,8 +2,8 @@ define tomcat::instance (
   $version          = $::tomcat::version,
   $basedir          = $::tomcat::basedir,
   $bind_address     = $::tomcat::bind_address,
-  $config_files     = $::tomcat::config_files,
-  $config_templates = $::tomcat::config_templates,
+  $files            = $::tomcat::files,
+  $templates        = $::tomcat::templates,
   $down             = $::tomcat::down,
   $extra_jars       = $::tomcat::extra_jars,
   $group            = $::tomcat::group,
@@ -64,17 +64,13 @@ define tomcat::instance (
     down         => $down,
   }
 
-  $config_file_paths = prefix($config_files, "${product_dir}/")
-  create_resources(
-    'tomcat::config::file',
-    $config_file_paths,
+  $file_paths = prefix($files, "${product_dir}/")
+  create_resources( 'tomcat::file', $file_paths,
     { user => $user, group => $group, product_dir => $product_dir }
   )
 
-  $config_template_paths = prefix($config_templates, "${product_dir}/")
-  create_resources(
-    'tomcat::config::template',
-    $config_template_paths,
+  $template_paths = prefix($templates, "${product_dir}/")
+  create_resources( 'tomcat::template', $template_paths,
     { user => $user, group => $group, product_dir => $product_dir }
   )
 
