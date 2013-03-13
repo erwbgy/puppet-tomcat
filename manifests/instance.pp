@@ -4,6 +4,7 @@ define tomcat::instance (
   $bind_address     = $::tomcat::bind_address,
   $config_files     = $::tomcat::config_files,
   $config_templates = $::tomcat::config_templates,
+  $down             = $::tomcat::down,
   $extra_jars       = $::tomcat::extra_jars,
   $group            = $::tomcat::group,
   $java_home        = $::tomcat::java_home,
@@ -60,6 +61,7 @@ define tomcat::instance (
     bind_address => $bind_address,
     min_mem      => $min_mem,
     max_mem      => $max_mem,
+    down         => $down,
   }
 
   create_resources(

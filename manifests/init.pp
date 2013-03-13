@@ -3,6 +3,7 @@ class tomcat (
   $basedir      = '/opt/tomcat',
   $bind_address = $::fqdn,
   $config_files = {},
+  $down         = false,
   $extra_jars   = [],
   $group        = 'tomcat',
   $java_home    = '/usr/java/latest',

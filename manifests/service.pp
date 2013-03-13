@@ -7,9 +7,10 @@ define tomcat::service (
   $version,
   $java_home,
   $java_opts,
-  $bind_address = $::fqdn,
+  $bind_address,
   $min_mem,
   $max_mem,
+  $down,
 ) {
   $product_dir = "${basedir}/${product}-${version}"
   runit::service { "${user}-${product}":
@@ -18,7 +19,7 @@ define tomcat::service (
     logdir      => $logdir,
     user        => $user,
     group       => $group,
-    down        => false,
+    down        => $down,
     timestamp   => false,
   }
   file { "${basedir}/runit/tomcat/run":
