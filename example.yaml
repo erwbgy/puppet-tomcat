@@ -1,10 +1,10 @@
 tomcat::config_files:
-  server.xml:
+  conf/server.xml:
     mode:     '0440'
     source:   'puppet:///files/tomcat/myapp/server.xml'
 
 tomcat::config_templates:
-  tomcat-users.xml:
+  conf/tomcat-users.xml:
     mode:     '0440'
     template: '/var/lib/puppet/files/tomcat/myapp/tomcat-users.xml.erb'
 
