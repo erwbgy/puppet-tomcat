@@ -1,16 +1,17 @@
 define tomcat::instance (
-  $version,
-  $basedir      = '/opt/tomcat',
-  $bind_address = $::fqdn,
-  $config_files = {},
-  $extra_jars   = [],
-  $group        = 'tomcat',
-  $java_home    = '/usr/java/latest',
-  $java_opts    = '',
-  $logdir       = '/var/log/tomcat',
-  $min_mem      = '1024m',
-  $max_mem      = '2048m',
-  $workspace    = '/root/tomcat',
+  $version          = $::tomcat::version,
+  $basedir          = $::tomcat::basedir,
+  $bind_address     = $::tomcat::bind_address,
+  $config_files     = $::tomcat::config_files,
+  $config_templates = $::tomcat::config_templates,
+  $extra_jars       = $::tomcat::extra_jars,
+  $group            = $::tomcat::group,
+  $java_home        = $::tomcat::java_home,
+  $java_opts        = $::tomcat::java_opts,
+  $logdir           = $::tomcat::logdir,
+  $min_mem          = $::tomcat::min_mem,
+  $max_mem          = $::tomcat::max_mem,
+  $workspace        = $::tomcat::workspace,
 ) {
   $user        = $title
   $product     = 'apache-tomcat'
@@ -62,8 +63,14 @@ define tomcat::instance (
   }
 
   create_resources(
-    'tomcat::config_file',
+    'tomcat::config::file',
     $config_files,
+    { user => $user, group => $group, product_dir => $product_dir }
+  )
+
+  create_resources(
+    'tomcat::config::template',
+    $config_templates,
     { user => $user, group => $group, product_dir => $product_dir }
   )
 
