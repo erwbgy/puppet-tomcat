@@ -13,6 +13,8 @@ define tomcat::file (
       path    => [ '/bin', '/usr/bin' ],
       command => "mkdir -p ${product_dir}/${dir}",
       creates => "${product_dir}/${dir}",
+      user    => $user,
+      group   => $group,
     }
   }
   if $source {

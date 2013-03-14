@@ -22,6 +22,8 @@ define tomcat::template(
       path    => [ '/bin', '/usr/bin' ],
       command => "mkdir -p ${product_dir}/${dir}",
       creates => "${product_dir}/${dir}",
+      user    => $user,
+      group   => $group,
     }
   }
   file { "${product_dir}/${filename}":
