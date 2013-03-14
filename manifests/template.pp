@@ -16,11 +16,22 @@ define tomcat::template(
   $workspace,
 ) {
   $filename = $title
+  if $filename =~ /^(.*?)\/([^\/]+)$/ {
+    $dir = $1
+    exec { "create-parent-dir-${product_dir}/${filename}":
+      path    => [ '/bin', '/usr/bin' ],
+      command => "mkdir -p ${product_dir}/${dir}",
+      creates => "${product_dir}/${dir}",
+    }
+  }
   file { "${product_dir}/${filename}":
     owner    => $user,
     group    => $group,
     mode     => $mode,
     content  => template($template),
-    require  => Exec["tomcat-unpack-${user}"],
+    require  => Exec[
+      "tomcat-unpack-${user}",
+      "create-parent-dir-${product_dir}/${filename}"
+    ],
   }
 }

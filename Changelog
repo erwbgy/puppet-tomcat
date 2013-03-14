@@ -1,0 +1,4 @@
+0.2.1:
+
+* Ensure file or template parent directories exist before delivering files
+
