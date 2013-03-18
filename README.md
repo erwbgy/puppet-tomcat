@@ -96,11 +96,11 @@ tomcat1 and tomcat2 users with:
       tomcat1:
         templates:
           conf/server.xml:
-            template: 'puppet:///files/tomcat/dev1/server.xml.erb'
+            template: '/etc/puppet/templates/tomcat/dev1/server.xml.erb'
       tomcat2:
         templates:
           conf/server.xml:
-            template: 'puppet:///files/tomcat/dev2/server.xml.erb'
+            template: '/etc/puppet/templates/tomcat/dev2/server.xml.erb'
 
 Values set at the tomcat level as set for all instances so both the tomcat1 and
 tomcat2 instance would get the same tomcat-users.xml file.  Each instance would
