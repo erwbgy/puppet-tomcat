@@ -119,7 +119,7 @@ above) substituted.
 
 For example:
 
-    <Connector address=<%= @config['bind_address'] %>
+    <Connector address="<%= @config['bind_address'] %>"
                port="8080" protocol="HTTP/1.1"
                connectionTimeout="20000"
                redirectPort="8443" compression="force"/>
