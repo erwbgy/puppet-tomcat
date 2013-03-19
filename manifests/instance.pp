@@ -1,6 +1,6 @@
 define tomcat::instance (
   $basedir          = $::tomcat::basedir,
-  $bind_address     = $::tomcat::bind_address,
+  $config           = $::tomcat::config,
   $down             = $::tomcat::down,
   $files            = $::tomcat::files,
   $group            = $::tomcat::group,
@@ -54,7 +54,7 @@ define tomcat::instance (
   create_resources( 'tomcat::template', $templates,
     {
       basedir      => $basedir,
-      bind_address => $bind_address,
+      config       => $config,
       down         => $down,
       group        => $group,
       java_home    => $java_home,
@@ -101,7 +101,7 @@ define tomcat::instance (
     version      => $version,
     java_home    => $java_home,
     java_opts    => $java_opts,
-    bind_address => $bind_address,
+    config       => $config,
     min_mem      => $min_mem,
     max_mem      => $max_mem,
     down         => $down,

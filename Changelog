@@ -1,3 +1,8 @@
+0.3.0:
+
+* Removed bind_address and replaced it with a config hash to set variables
+that are used when templates are processed.
+
 0.2.1:
 
 * Ensure file or template parent directories exist before delivering files

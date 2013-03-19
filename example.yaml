@@ -1,3 +1,6 @@
+tomcat::config:
+  bind_address: %{fqdn}
+
 tomcat::files:
   conf/server.xml:
     mode:     '0440'
@@ -20,11 +23,13 @@ tomcat::version:   '7.0.32'
 
 tomcat::instances:
   tomcat1:
-    basedir:      '/apps/tomcat1'
-    bind_address: %{ipaddress_eth0_1}
-    logdir:       '/apps/tomcat1/logs'
+    basedir: '/apps/tomcat1'
+    logdir:  '/apps/tomcat1/logs'
+    config:
+      bind_address: %{ipaddress_eth0_1}
   tomcat2:
-    basedir:      '/apps/tomcat2'
-    bind_address: %{ipaddress_eth0_2}
-    logdir:       '/apps/tomcat2/logs'
+    basedir: '/apps/tomcat2'
+    logdir:  '/apps/tomcat2/logs'
+    config:
+      bind_address: %{ipaddress_eth0_2}
 

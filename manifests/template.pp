@@ -1,6 +1,6 @@
 define tomcat::template(
   $basedir,
-  $bind_address,
+  $config,
   $down,
   $group,
   $java_home,

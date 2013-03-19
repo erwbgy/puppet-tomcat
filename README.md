@@ -9,6 +9,9 @@ The recommended usage is to place the configuration is hiera and just:
 
 Example hiera config:
 
+    tomcat::config:
+      bind_address: %{fqdn}
+
     tomcat::files:
       conf/server.xml:
         mode:     '0440'
@@ -32,18 +35,21 @@ Example hiera config:
     tomcat::instances:
       tomcat1:
         basedir:      '/apps/tomcat1'
-        bind_address: %{ipaddress_eth0_1}
         logdir:       '/apps/tomcat1/logs'
+        config:
+          bind_address: %{ipaddress_eth0_1}
       tomcat2:
         basedir:      '/apps/tomcat2'
-        bind_address: %{ipaddress_eth0_2}
         logdir:       '/apps/tomcat2/logs'
+        config:
+          bind_address: %{ipaddress_eth0_2}
 
 ## tomcat parameters
 
 *basedir*: The base installation directory. Default: '/opt/tomcat'
 
-*bind_address*: The IP address listen sockets are bound to. Default: $::fqdn
+*config*: A hash of additional configuration variables that will be set when
+templates are processed.
 
 *files*: A hash of configuration files to install - see below
 
@@ -88,6 +94,9 @@ templates before being delivered.
 For example configuration could be delivered using for instances running as the
 tomcat1 and tomcat2 users with:
 
+    tomcat::config:
+      bind_address: %{fqdn}
+
     tomcat::files:
       conf/tomcat-users.xml:
         source: 'puppet:///files/tomcat/dev/tomcat-users.xml'
@@ -105,11 +114,19 @@ tomcat1 and tomcat2 users with:
 Values set at the tomcat level as set for all instances so both the tomcat1 and
 tomcat2 instance would get the same tomcat-users.xml file.  Each instance would
 get their own server.xml file based on the template specified with instance
-variables (like basedir and logdir) substituted.
+variables (like basedir and logdir) and config variables (like bind_address
+above) substituted.
 
-All files are relative to the product installation.  For example if the product
-installation is '/opt/tomcat/apache-tomcat-7.0.37' then the full path to the
-'tomcat-users.xml' file would be
+For example:
+
+    <Connector address=<%= @config['bind_address'] %>
+               port="8080" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443" compression="force"/>
+
+All files and templates are relative to the product installation.  For example
+if the product installation is '/opt/tomcat/apache-tomcat-7.0.37' then the full
+path to the 'tomcat-users.xml' file would be
 '/opt/tomcat/apache-tomcat-7.0.37/conf/tomcat-users.xml'.
 
 Note that the path specified by the 'template' parameter is on the Puppet

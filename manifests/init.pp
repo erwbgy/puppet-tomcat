@@ -1,7 +1,7 @@
 class tomcat (
   $version,
   $basedir          = '/opt/tomcat',
-  $bind_address     = $::fqdn,
+  $config           = {},
   $down             = false,
   $files            = {},
   $group            = 'tomcat',

@@ -1,6 +1,6 @@
 define tomcat::service (
   $basedir,
-  $bind_address,
+  $config,
   $down,
   $group,
   $logdir,
