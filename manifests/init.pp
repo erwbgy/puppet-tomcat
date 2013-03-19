@@ -2,6 +2,7 @@ class tomcat (
   $version,
   $basedir          = '/opt/tomcat',
   $config           = {},
+  $cpu_affinity     = undef,
   $down             = false,
   $files            = {},
   $group            = 'tomcat',

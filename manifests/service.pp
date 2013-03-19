@@ -1,6 +1,7 @@
 define tomcat::service (
   $basedir,
   $config,
+  $cpu_affinity,
   $down,
   $group,
   $logdir,

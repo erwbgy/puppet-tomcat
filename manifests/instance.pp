@@ -1,6 +1,7 @@
 define tomcat::instance (
   $basedir          = $::tomcat::basedir,
   $config           = $::tomcat::config,
+  $cpu_affinity     = $::tomcat::cpu_affinity,
   $down             = $::tomcat::down,
   $files            = $::tomcat::files,
   $group            = $::tomcat::group,
@@ -55,6 +56,7 @@ define tomcat::instance (
     {
       basedir      => $basedir,
       config       => $config,
+      cpu_affinity => $cpu_affinity,
       down         => $down,
       group        => $group,
       java_home    => $java_home,
@@ -102,6 +104,7 @@ define tomcat::instance (
     java_home    => $java_home,
     java_opts    => $java_opts,
     config       => $config,
+    cpu_affinity => $cpu_affinity,
     min_mem      => $min_mem,
     max_mem      => $max_mem,
     down         => $down,

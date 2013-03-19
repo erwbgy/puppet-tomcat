@@ -3,6 +3,10 @@
 * Removed bind_address and replaced it with a config hash to set variables
 that are used when templates are processed.
 
+* Start in the product directory so relative paths work as expected
+
+* Enable CPU affinity to be set to only run processes on specific CPU cores
+
 0.2.1:
 
 * Ensure file or template parent directories exist before delivering files

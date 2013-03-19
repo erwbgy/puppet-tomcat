@@ -12,6 +12,8 @@ Example hiera config:
     tomcat::config:
       bind_address: %{fqdn}
 
+    tomcat::cpu_affinity: '0,1'
+
     tomcat::files:
       conf/server.xml:
         mode:     '0440'
@@ -50,6 +52,9 @@ Example hiera config:
 
 *config*: A hash of additional configuration variables that will be set when
 templates are processed.
+
+*cpu_affinity*: Enable CPU affinity to be set to only run processes on specific
+CPU cores - for example '0,1' to only run processes on the first two cores.
 
 *files*: A hash of configuration files to install - see below
 

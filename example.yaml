@@ -1,6 +1,8 @@
 tomcat::config:
   bind_address: %{fqdn}
 
+tomcat::cpu_affinity: '0,1'
+
 tomcat::files:
   conf/server.xml:
     mode:     '0440'

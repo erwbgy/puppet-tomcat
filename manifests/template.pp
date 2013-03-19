@@ -1,6 +1,7 @@
 define tomcat::template(
   $basedir,
   $config,
+  $cpu_affinity,
   $down,
   $group,
   $java_home,
