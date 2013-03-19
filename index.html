@@ -43,7 +43,10 @@ under one or more users.</p>
 
 <p>Example hiera config:</p>
 
-<pre><code>tomcat::files:
+<pre><code>tomcat::config:
+  bind_address: %{fqdn}
+
+tomcat::files:
   conf/server.xml:
     mode:     '0440'
     source:   'puppet:///files/tomcat/myapp/server.xml'
@@ -66,19 +69,22 @@ tomcat::version:   '7.0.32'
 tomcat::instances:
   tomcat1:
     basedir:      '/apps/tomcat1'
-    bind_address: %{ipaddress_eth0_1}
     logdir:       '/apps/tomcat1/logs'
+    config:
+      bind_address: %{ipaddress_eth0_1}
   tomcat2:
     basedir:      '/apps/tomcat2'
-    bind_address: %{ipaddress_eth0_2}
     logdir:       '/apps/tomcat2/logs'
+    config:
+      bind_address: %{ipaddress_eth0_2}
 </code></pre>
 
 <h2>tomcat parameters</h2>
 
 <p><em>basedir</em>: The base installation directory. Default: '/opt/tomcat'</p>
 
-<p><em>bind_address</em>: The IP address listen sockets are bound to. Default: $::fqdn</p>
+<p><em>config</em>: A hash of additional configuration variables that will be set when
+templates are processed.</p>
 
 <p><em>files</em>: A hash of configuration files to install - see below</p>
 
@@ -123,7 +129,10 @@ templates before being delivered.</p>
 <p>For example configuration could be delivered using for instances running as the
 tomcat1 and tomcat2 users with:</p>
 
-<pre><code>tomcat::files:
+<pre><code>tomcat::config:
+  bind_address: %{fqdn}
+
+tomcat::files:
   conf/tomcat-users.xml:
     source: 'puppet:///files/tomcat/dev/tomcat-users.xml'
 
@@ -141,11 +150,20 @@ tomcat:
 <p>Values set at the tomcat level as set for all instances so both the tomcat1 and
 tomcat2 instance would get the same tomcat-users.xml file.  Each instance would
 get their own server.xml file based on the template specified with instance
-variables (like basedir and logdir) substituted.</p>
+variables (like basedir and logdir) and config variables (like bind_address
+above) substituted.</p>
 
-<p>All files are relative to the product installation.  For example if the product
-installation is '/opt/tomcat/apache-tomcat-7.0.37' then the full path to the
-'tomcat-users.xml' file would be
+<p>For example:</p>
+
+<pre><code>&lt;Connector address="&lt;%= @config['bind_address'] %&gt;"
+           port="8080" protocol="HTTP/1.1"
+           connectionTimeout="20000"
+           redirectPort="8443" compression="force"/&gt;
+</code></pre>
+
+<p>All files and templates are relative to the product installation.  For example
+if the product installation is '/opt/tomcat/apache-tomcat-7.0.37' then the full
+path to the 'tomcat-users.xml' file would be
 '/opt/tomcat/apache-tomcat-7.0.37/conf/tomcat-users.xml'.</p>
 
 <p>Note that the path specified by the 'template' parameter is on the Puppet
