@@ -46,6 +46,8 @@ under one or more users.</p>
 <pre><code>tomcat::config:
   bind_address: %{fqdn}
 
+tomcat::cpu_affinity: '0,1'
+
 tomcat::files:
   conf/server.xml:
     mode:     '0440'
@@ -85,6 +87,9 @@ tomcat::instances:
 
 <p><em>config</em>: A hash of additional configuration variables that will be set when
 templates are processed.</p>
+
+<p><em>cpu_affinity</em>: Enable CPU affinity to be set to only run processes on specific
+CPU cores - for example '0,1' to only run processes on the first two cores.</p>
 
 <p><em>files</em>: A hash of configuration files to install - see below</p>
 
