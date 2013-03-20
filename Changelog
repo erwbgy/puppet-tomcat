@@ -7,6 +7,9 @@ that are used when templates are processed.
 
 * Enable CPU affinity to be set to only run processes on specific CPU cores
 
+* Fixed bug where setting the version at the instance level still resulted in
+an error that the version was not set.
+
 0.2.1:
 
 * Ensure file or template parent directories exist before delivering files

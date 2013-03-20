@@ -17,6 +17,9 @@ define tomcat::instance (
   $version          = $::tomcat::version,
   $workspace        = $::tomcat::workspace,
 ) {
+  if ! $version {
+    fail( "tomcat version MUST be set" )
+  }
   $user        = $title
   $product     = 'apache-tomcat'
   $product_dir = "${basedir}/${product}-${version}"

@@ -1,5 +1,5 @@
 class tomcat (
-  $version,
+  $version          = undef,
   $basedir          = '/opt/tomcat',
   $config           = {},
   $cpu_affinity     = undef,
