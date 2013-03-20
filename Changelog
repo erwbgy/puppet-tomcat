@@ -1,14 +1,16 @@
-0.3.0:
-
-* Removed bind_address and replaced it with a config hash to set variables
-that are used when templates are processed.
+0.4.0:
 
 * Start in the product directory so relative paths work as expected
 
 * Enable CPU affinity to be set to only run processes on specific CPU cores
 
 * Fixed bug where setting the version at the instance level still resulted in
-an error that the version was not set.
+an error that the version was not set
+
+0.3.0:
+
+* Removed bind_address and replaced it with a config hash to set variables
+that are used when templates are processed.
 
 0.2.1:
 
