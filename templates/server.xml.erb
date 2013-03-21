@@ -73,7 +73,8 @@
                redirectPort="8443" compression="force"/>                      
     <!-- A "Connector" using the shared thread pool-->                        
     <!--                                                                      
-    <Connector executor="tomcatThreadPool"                                    
+    <Connector address="<%= @bind_address %>"
+               executor="tomcatThreadPool"                                    
                port="8080" protocol="HTTP/1.1"                                
                connectionTimeout="20000"                                      
                redirectPort="8443" />                                         
@@ -83,7 +84,8 @@
          connector should be using the OpenSSL style configuration            
          described in the APR documentation -->                               
     <!--                                                                      
-    <Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"              
+    <Connector address="<%= @bind_address %>"
+               port="8443" protocol="HTTP/1.1" SSLEnabled="true"              
                maxThreads="150" scheme="https" secure="true"                  
                clientAuth="false" sslProtocol="TLS" />                        
     -->                                                                       
