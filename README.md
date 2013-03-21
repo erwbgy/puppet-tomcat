@@ -200,6 +200,29 @@ The jolokia parameters enable JMX statistics to be queried over HTTP - for examp
     ," attribute":"HeapMemoryUsage","type":"read"},"value":{"max":1908932608,"commi
     tted":1029046272,"init":1073741824,"used":155889168}}
 
+To limit what what can be accessed a jolokia-access.xml can be included in the
+war file.  This is what I do to ensure read-only access:
+
+    $ cd /var/lib/puppet/files/tomcat
+    $ wget http://labs.consol.de/maven/repository/org/jolokia/jolokia-war/1.1.0/jolokia-war-1.1.0.war
+    $ vim jolokia-access.xml
+    <?xml version="1.0" encoding="utf-8"?>
+    <restrict>
+      <commands>
+        <command>read</command>
+        <command>list</command>
+        <command>version</command>
+        <command>search</command>
+      </commands>
+      <http>
+        <method>get</method>
+      </http>
+    </restrict>
+    $ mkdir -p WEB-INF/classes
+    $ cp jolokia-access.xml WEB-INF/classes/
+    $ zip -u jolokia-war-1.1.0.war WEB-INF/classes/jolokia-access.xml
+    $ rm -rf WEB-INF
+
 See http://www.jolokia.org/ for more information.
 
 ## Support
