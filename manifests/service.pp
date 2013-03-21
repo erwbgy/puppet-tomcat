@@ -6,6 +6,7 @@ define tomcat::service (
   $cpu_affinity,
   $down,
   $group,
+  $localhost,
   $logdir,
   $java_home,
   $java_opts,

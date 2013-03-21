@@ -8,6 +8,7 @@ define tomcat::template(
   $group,
   $java_home,
   $java_opts,
+  $localhost,
   $logdir,
   $max_mem,
   $min_mem,

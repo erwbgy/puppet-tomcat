@@ -35,12 +35,14 @@ Example hiera config:
       tomcat1:
         basedir:      '/apps/tomcat1'
         bind_address: %{ipaddress_eth0_1}
+        localhost:    '127.0.0.101'
         logdir:       '/apps/tomcat1/logs'
         config:
           admin_user: 'fbloggs'
       tomcat2:
         basedir:      '/apps/tomcat2'
         bind_address: %{ipaddress_eth0_2}
+        localhost:    '127.0.0.102'
         logdir:       '/apps/tomcat2/logs'
         config:
           admin_user: 'jbloggs'
@@ -68,6 +70,8 @@ CPU cores - for example '0,1' to only run processes on the first two cores.
 '/usr/java/latest',
 
 *java_opts*: Additional java command-line options to pass to the startup script
+
+*localhost*: The localhost address to bind listen ports to. Default: 'localhost'
 
 *logdir*: The base log directory. Default: '/var/logs/tomcat'
 

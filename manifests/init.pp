@@ -8,6 +8,7 @@ class tomcat (
   $down             = false,
   $files            = {},
   $group            = 'tomcat',
+  $localhost        = 'localhost',
   $logdir           = '/var/log/tomcat',
   $java_home        = '/usr/java/latest',
   $java_opts        = '',
