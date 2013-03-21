@@ -1,8 +1,7 @@
 #!/bin/bash
-exec 2>&1
 PID=$(cat ./supervise/pid)
 if test -z "$PID"; then exit 1; fi
 BIND_IP=$(perl -MSocket -le '$ip = gethostbyname($ARGV[0]); print inet_ntoa($ip)' <%= @bind_address %>)
 CHECK1=$(/usr/sbin/lsof -nP -w -p$PID -F | egrep "^n${BIND_IP}:<%= @check_port %>")
-if test -z "$CHECK1"; then exist 1; fi
+if test -z "$CHECK1"; then exit 1; fi
 exit 0

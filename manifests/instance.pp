@@ -48,8 +48,8 @@ define tomcat::instance (
     workspace   => $workspace,
   }
 
-  if ! $templates['config/server.xml'] {
-    file { "${product_dir}/config/server.xml":
+  if ! $templates['conf/server.xml'] {
+    file { "${product_dir}/conf/server.xml":
       ensure   => present,
       owner    => $user,
       group    => $group,
@@ -59,8 +59,8 @@ define tomcat::instance (
     }
   }
 
-  if ! $templates['config/logging.properties'] {
-    file { "${product_dir}/config/logging.properties":
+  if ! $templates['conf/logging.properties'] {
+    file { "${product_dir}/conf/logging.properties":
       ensure   => present,
       owner    => $user,
       group    => $group,
