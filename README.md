@@ -82,13 +82,13 @@ war file are downloaded from. Default: 'puppet:///files/tomcat'
 *jolokia*: Whether or not to install the jolokia war file and configure a
 separate service to run it. Default: false
 
-*jolokia_address: The address that the jolokia HTTP service listens on.
+*jolokia_address*: The address that the jolokia HTTP service listens on.
 Default: 'localhost'
 
-*jolokia_port: The port that the jolokia HTTP service listens on. Default:
+*jolokia_port*: The port that the jolokia HTTP service listens on. Default:
 '8190'
 
-*jolokia_version: The version of the jolokia war file to download and install.
+*jolokia_version*: The version of the jolokia war file to download and install.
 Default: '1.1.0'
 
 *localhost*: The localhost address to bind listen ports to. Default: 'localhost'
@@ -185,8 +185,9 @@ if /etc/puppet/fileserver.conf has:
     [files]
     path /var/lib/puppet/files
 
-then put the zip files in /var/lib/puppet/files/tomcat.  Any files specified
-with the 'files' parameter can also be placed in this directory.
+then put the tar file in /var/lib/puppet/files/tomcat.  Any files specified
+with the 'files' parameter can also be placed in this directory, as can the
+Jolokia war file.
 
 This location can be changed by setting the 'filestore' parameter.
 
