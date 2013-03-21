@@ -28,24 +28,29 @@ Example hiera config:
     tomcat::java_home: '/usr/java/jdk1.7.0_09'
     
     tomcat::java_opts: '-Xms1536m -Xmx1536m -XX:MaxPermSize=512m'
+
+    tomcat::jolokia_version: '1.1.0'
     
     tomcat::version:   '7.0.37'
     
     tomcat::instances:
       tomcat1:
-        basedir:      '/apps/tomcat1'
-        bind_address: %{ipaddress_eth0_1}
-        localhost:    '127.0.0.101'
-        logdir:       '/apps/tomcat1/logs'
+        basedir:         '/apps/tomcat1'
+        bind_address:    %{ipaddress_eth0_1}
+        localhost:       '127.0.0.101'
+        logdir:          '/apps/tomcat1/logs'
+        jolokia:         'true'
+        jolokia_address: %{ipaddress_eth0_1}
+        jolokia_port:    '8190'
         config:
-          admin_user: 'fbloggs'
+          admin_user:    'fbloggs'
       tomcat2:
-        basedir:      '/apps/tomcat2'
-        bind_address: %{ipaddress_eth0_2}
-        localhost:    '127.0.0.102'
-        logdir:       '/apps/tomcat2/logs'
+        basedir:         '/apps/tomcat2'
+        bind_address:    %{ipaddress_eth0_2}
+        localhost:       '127.0.0.102'
+        logdir:          '/apps/tomcat2/logs'
         config:
-          admin_user: 'jbloggs'
+          admin_user:    'jbloggs'
 
 ## tomcat parameters
 
@@ -64,12 +69,27 @@ CPU cores - for example '0,1' to only run processes on the first two cores.
 
 *files*: A hash of configuration files to install - see below
 
+*filestore*: The Puppet filestore location where the Tomcat tarball and Jolokia
+war file are downloaded from. Default: 'puppet:///files/tomcat'
+
 *group*: The user''s primary group. Default: 'tomcat',
 
 *java_home*: The base directory of the JDK installation to be used. Default:
-'/usr/java/latest',
+'/usr/java/latest'
 
 *java_opts*: Additional java command-line options to pass to the startup script
+
+*jolokia*: Whether or not to install the jolokia war file and configure a
+separate service to run it. Default: false
+
+*jolokia_address: The address that the jolokia HTTP service listens on.
+Default: 'localhost'
+
+*jolokia_port: The port that the jolokia HTTP service listens on. Default:
+'8190'
+
+*jolokia_version: The version of the jolokia war file to download and install.
+Default: '1.1.0'
 
 *localhost*: The localhost address to bind listen ports to. Default: 'localhost'
 
@@ -158,15 +178,28 @@ templates configuration.
 
 ## Product files
 
-Place the product zip files (eg. 'apache-tomcat-7.0.32.tar.gz') under a
-'tomcat' directory of the 'files' file store.  For example if
-/etc/puppet/fileserver.conf has:
+By default the product tar file (eg. 'apache-tomcat-7.0.32.tar.gz') is expected
+to be found under a 'tomcat' directory of the 'files' file store.  For example
+if /etc/puppet/fileserver.conf has:
 
     [files]
     path /var/lib/puppet/files
 
 then put the zip files in /var/lib/puppet/files/tomcat.  Any files specified
 with the 'files' parameter can also be placed in this directory.
+
+This location can be changed by setting the 'filestore' parameter.
+
+## Monitoring
+
+The jolokia parameters enable JMX statistics to be queried over HTTP - for example:
+
+    $ curl http://localhost:8190/jolokia/read/java.lang:type=Memory/HeapMemoryUsage
+    {"timestamp":1363883323,"status":200,"request":{"mbean":"java.lang:type=Memory"
+    ," attribute":"HeapMemoryUsage","type":"read"},"value":{"max":1908932608,"commi
+    tted":1029046272,"init":1073741824,"used":155889168}}
+
+See http://www.jolokia.org/ for more information.
 
 ## Support
 
