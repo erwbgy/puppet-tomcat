@@ -143,8 +143,8 @@
       </Host>
     </Engine>
   </Service>
-  <!-- Reference: http://labs.consol.de/blog/nagios/putting-jmx4perl-on-the-fast-lane-for-tomcat/ -->
 <% if @jolokia -%>
+  <!-- Reference: http://labs.consol.de/blog/nagios/putting-jmx4perl-on-the-fast-lane-for-tomcat/ -->
   <Service name="jolokia">
     <Connector address="<%= @jolokia_address %>"
                port="<%= @jolokia_port %>" maxHttpHeaderSize="8192"

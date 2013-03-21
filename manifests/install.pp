@@ -44,7 +44,7 @@ define tomcat::install (
   if $jolokia {
     file { "${basedir}/${subdir}/jolokia":
       ensure  => directory,
-      mode    => '0755'
+      mode    => '0755',
       require => Exec["tomcat-unpack-${user}"],
     }
     file { "${basedir}/${subdir}/jolokia/jolokia.war":

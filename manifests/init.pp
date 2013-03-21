@@ -7,7 +7,7 @@ class tomcat (
   $cpu_affinity     = undef,
   $down             = false,
   $files            = {},
-  $filestore        = 'puppet://files/tomcat',
+  $filestore        = 'puppet:///files/tomcat',
   $group            = 'tomcat',
   $localhost        = 'localhost',
   $logdir           = '/var/log/tomcat',

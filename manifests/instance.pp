@@ -47,11 +47,16 @@ define tomcat::instance (
   }
 
   tomcat::install { "${user}-${product}":
-    version     => $version,
-    user        => $user,
-    group       => $group,
-    basedir     => $basedir,
-    workspace   => $workspace,
+    basedir         => $basedir,
+    filestore       => $filestore,
+    group           => $group,
+    jolokia         => $jolokia,
+    jolokia_address => $jolokia_address,
+    jolokia_port    => $jolokia_port,
+    jolokia_version => $jolokia_version,
+    user            => $user,
+    version         => $version,
+    workspace       => $workspace,
   }
 
   if ! $templates['conf/server.xml'] {
