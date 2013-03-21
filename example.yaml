@@ -12,11 +12,15 @@ tomcat::templates:
     mode:     '0440'
     template: '/var/lib/puppet/files/tomcat/myapp/tomcat-users.xml.erb'
 
+tomcat::filestore: 'puppet://files/tomcat'
+
 tomcat::group:     'tomcat'
 
 tomcat::java_home: '/usr/java/jdk1.7.0_09'
 
 tomcat::java_opts: '-Xms1536m -Xmx1536m -XX:MaxPermSize=512m'
+
+tomcat::jolokia_version: '1.1.0'
 
 tomcat::version:   '7.0.37'
 
@@ -25,6 +29,9 @@ tomcat::instances:
     basedir:      '/apps/tomcat1'
     bind_address: %{ipaddress_eth0_1}
     logdir:       '/apps/tomcat1/logs'
+    jolokia:      'true'
+    jolokia_address: %{ipaddress_eth0_1}
+    jolokia_port:    '8190'
     config:
       admin_user: 'fbloggs'
   tomcat2:

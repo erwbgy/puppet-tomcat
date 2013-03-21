@@ -143,4 +143,19 @@
       </Host>
     </Engine>
   </Service>
+  <!-- Reference: http://labs.consol.de/blog/nagios/putting-jmx4perl-on-the-fast-lane-for-tomcat/ -->
+<% if @jolokia -%>
+  <Service name="jolokia">
+    <Connector address="<%= @jolokia_address %>"
+               port="<%= @jolokia_port %>" maxHttpHeaderSize="8192"
+               maxThreads="5" minSpareThreads="1" maxSpareThreads="3"
+               enableLookups="true" acceptCount="20"
+               connectionTimeout="3000" disableUploadTimeout="true" />    
+    <Engine name="jolokia" defaultHost="<%= @localhost %>">
+      <Host name="<%= @localhost %>" appBase="jolokia"
+            unpackWARs="false" autoDeploy="true"
+            xmlValidation="false" xmlNamespaceAware="false"/>
+    </Engine>
+  </Service>
+<% end -%>
 </Server>

@@ -1,3 +1,10 @@
+0.5.1:
+
+* Added jolokia monitoring support.
+
+* Make the file store location of the Tomcat tarball and Jolokia war file
+configurable.
+
 0.5.0:
 
 * Added a Runit check script that determines if the instance is up by using
