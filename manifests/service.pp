@@ -1,5 +1,7 @@
 define tomcat::service (
   $basedir,
+  $bind_address,
+  $check_port,
   $config,
   $cpu_affinity,
   $down,
@@ -29,6 +31,14 @@ define tomcat::service (
     owner   => $user,
     group   => $group,
     content => template('tomcat/run.erb'),
+    require => Runit::Service["${user}-${product}"],
+  }
+  file { "${basedir}/runit/tomcat/check":
+    ensure  => present,
+    mode    => '0555',
+    owner   => $user,
+    group   => $group,
+    content => template('tomcat/check.erb'),
     require => Runit::Service["${user}-${product}"],
   }
   file { "${basedir}/service/tomcat":

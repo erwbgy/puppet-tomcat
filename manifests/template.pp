@@ -1,5 +1,7 @@
 define tomcat::template(
   $basedir,
+  $bind_address,
+  $check_port,
   $config,
   $cpu_affinity,
   $down,

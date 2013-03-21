@@ -1,6 +1,8 @@
 class tomcat (
   $version          = undef,
   $basedir          = '/opt/tomcat',
+  $bind_address     = $::fqdn,
+  $check_port       = '8080',
   $config           = {},
   $cpu_affinity     = undef,
   $down             = false,

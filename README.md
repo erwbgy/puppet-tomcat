@@ -10,17 +10,14 @@ The recommended usage is to place the configuration in hiera and just:
 Example hiera config:
 
     tomcat::config:
-      bind_address: %{fqdn}
-
+      admin_user: 'admin'
+    
     tomcat::cpu_affinity: '0,1'
-
+    
     tomcat::files:
-      conf/server.xml:
-        mode:     '0440'
-        source:   'puppet:///files/tomcat/myapp/server.xml'
       lib/postgresql-9.2-1002.jdbc4.jar:
         source:   'puppet:///files/jdbc/postgresql-9.2-1002.jdbc4.jar'
-
+    
     tomcat::templates:
       conf/tomcat-users.xml:
         mode:     '0440'
@@ -32,23 +29,30 @@ Example hiera config:
     
     tomcat::java_opts: '-Xms1536m -Xmx1536m -XX:MaxPermSize=512m'
     
-    tomcat::version:   '7.0.32'
+    tomcat::version:   '7.0.37'
     
     tomcat::instances:
       tomcat1:
         basedir:      '/apps/tomcat1'
+        bind_address: %{ipaddress_eth0_1}
         logdir:       '/apps/tomcat1/logs'
         config:
-          bind_address: %{ipaddress_eth0_1}
+          admin_user: 'fbloggs'
       tomcat2:
         basedir:      '/apps/tomcat2'
+        bind_address: %{ipaddress_eth0_2}
         logdir:       '/apps/tomcat2/logs'
         config:
-          bind_address: %{ipaddress_eth0_2}
+          admin_user: 'jbloggs'
 
 ## tomcat parameters
 
 *basedir*: The base installation directory. Default: '/opt/tomcat'
+
+*bind_address*: The IP or hostname to bind listen ports to. Default: $fqdn
+
+*check_port*: The port that the instance must be listening on (bound to
+bind_address) for it to be considered up. Default: '8080'
 
 *config*: A hash of additional configuration variables that will be set when
 templates are processed.
@@ -100,34 +104,38 @@ For example configuration could be delivered using for instances running as the
 tomcat1 and tomcat2 users with:
 
     tomcat::config:
-      bind_address: %{fqdn}
+      admin_user: 'admin'
+      admin_pass: 'admin'
 
     tomcat::files:
       conf/tomcat-users.xml:
-        source: 'puppet:///files/tomcat/dev/tomcat-users.xml'
+        source: 'puppet:///files/tomcat/dev/context.xml'
       
     tomcat:
       tomcat1:
+        config:
+          admin_pass: 'tinstaafl'
         templates:
-          conf/server.xml:
-            template: '/etc/puppet/templates/tomcat/dev1/server.xml.erb'
+          conf/tomcat-users.xml:
+            template: '/etc/puppet/templates/tomcat/dev1/tomcat-users.xml.erb'
       tomcat2:
+        config:
+          admin_pass: 'timtowtdi'
         templates:
-          conf/server.xml:
-            template: '/etc/puppet/templates/tomcat/dev2/server.xml.erb'
+          conf/tomcat-users.xml:
+            template: '/etc/puppet/templates/tomcat/dev2/tomcat-users.xml.erb'
 
 Values set at the tomcat level as set for all instances so both the tomcat1 and
-tomcat2 instance would get the same tomcat-users.xml file.  Each instance would
-get their own server.xml file based on the template specified with instance
-variables (like basedir and logdir) and config variables (like bind_address
-above) substituted.
+tomcat2 instance would get the same context.xml file.  Each instance would get
+their own tomcat-users.xml file based on the template specified with instance
+variables (like basedir and logdir) and config variables (like admin_user and
+admin_pass above) substituted.
 
 For example:
 
-    <Connector address="<%= @config['bind_address'] %>"
-               port="8080" protocol="HTTP/1.1"
-               connectionTimeout="20000"
-               redirectPort="8443" compression="force"/>
+    <user username="<%= @admin_user %>"
+          password="<%= @admin_pass %>"
+          roles="tomcat,manager-gui"/>
 
 All files and templates are relative to the product installation.  For example
 if the product installation is '/opt/tomcat/apache-tomcat-7.0.37' then the full
@@ -136,6 +144,13 @@ path to the 'tomcat-users.xml' file would be
 
 Note that the path specified by the 'template' parameter is on the Puppet
 master.
+
+## Default templates
+
+There are default templates for conf/server.xml to listen on the specified
+bind_address and for conf/logging.properties to use the specified logdir.
+These defaults are only used if the template is not specified using the
+templates configuration.
 
 ## Product files
 

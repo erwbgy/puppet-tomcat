@@ -1,5 +1,7 @@
 define tomcat::instance (
   $basedir          = $::tomcat::basedir,
+  $bind_address     = $::tomcat::bind_address,
+  $check_port       = $::tomcat::check_port,
   $config           = $::tomcat::config,
   $cpu_affinity     = $::tomcat::cpu_affinity,
   $down             = $::tomcat::down,
@@ -46,6 +48,28 @@ define tomcat::instance (
     workspace   => $workspace,
   }
 
+  if ! $templates['config/server.xml'] {
+    file { "${product_dir}/config/server.xml":
+      ensure   => present,
+      owner    => $user,
+      group    => $group,
+      mode     => $mode,
+      content  => template('tomcat/server.xml.erb'),
+      require  => Exec["tomcat-unpack-${user}"],
+    }
+  }
+
+  if ! $templates['config/logging.properties'] {
+    file { "${product_dir}/config/logging.properties":
+      ensure   => present,
+      owner    => $user,
+      group    => $group,
+      mode     => $mode,
+      content  => template('tomcat/logging.properties.erb'),
+      require  => Exec["tomcat-unpack-${user}"],
+    }
+  }
+
   create_resources( 'tomcat::file', $files,
     {
       group       => $group,
@@ -58,6 +82,8 @@ define tomcat::instance (
   create_resources( 'tomcat::template', $templates,
     {
       basedir      => $basedir,
+      bind_address => $bind_address,
+      check_port   => $check_port,
       config       => $config,
       cpu_affinity => $cpu_affinity,
       down         => $down,
@@ -99,6 +125,8 @@ define tomcat::instance (
 
   tomcat::service { "${user}-${product}":
     basedir      => $basedir,
+    bind_address => $bind_address,
+    check_port   => $check_port,
     logdir       => $logdir,
     product      => $product,
     user         => $user,
