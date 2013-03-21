@@ -44,14 +44,11 @@ under one or more users.</p>
 <p>Example hiera config:</p>
 
 <pre><code>tomcat::config:
-  bind_address: %{fqdn}
+  admin_user: 'admin'
 
 tomcat::cpu_affinity: '0,1'
 
 tomcat::files:
-  conf/server.xml:
-    mode:     '0440'
-    source:   'puppet:///files/tomcat/myapp/server.xml'
   lib/postgresql-9.2-1002.jdbc4.jar:
     source:   'puppet:///files/jdbc/postgresql-9.2-1002.jdbc4.jar'
 
@@ -66,24 +63,38 @@ tomcat::java_home: '/usr/java/jdk1.7.0_09'
 
 tomcat::java_opts: '-Xms1536m -Xmx1536m -XX:MaxPermSize=512m'
 
-tomcat::version:   '7.0.32'
+tomcat::jolokia_version: '1.1.0'
+
+tomcat::version:   '7.0.37'
 
 tomcat::instances:
   tomcat1:
-    basedir:      '/apps/tomcat1'
-    logdir:       '/apps/tomcat1/logs'
+    basedir:         '/apps/tomcat1'
+    bind_address:    %{ipaddress_eth0_1}
+    localhost:       '127.0.0.101'
+    logdir:          '/apps/tomcat1/logs'
+    jolokia:         'true'
+    jolokia_address: %{ipaddress_eth0_1}
+    jolokia_port:    '8190'
     config:
-      bind_address: %{ipaddress_eth0_1}
+      admin_user:    'fbloggs'
   tomcat2:
-    basedir:      '/apps/tomcat2'
-    logdir:       '/apps/tomcat2/logs'
+    basedir:         '/apps/tomcat2'
+    bind_address:    %{ipaddress_eth0_2}
+    localhost:       '127.0.0.102'
+    logdir:          '/apps/tomcat2/logs'
     config:
-      bind_address: %{ipaddress_eth0_2}
+      admin_user:    'jbloggs'
 </code></pre>
 
 <h2>tomcat parameters</h2>
 
 <p><em>basedir</em>: The base installation directory. Default: '/opt/tomcat'</p>
+
+<p><em>bind_address</em>: The IP or hostname to bind listen ports to. Default: $fqdn</p>
+
+<p><em>check_port</em>: The port that the instance must be listening on (bound to
+bind_address) for it to be considered up. Default: '8080'</p>
 
 <p><em>config</em>: A hash of additional configuration variables that will be set when
 templates are processed.</p>
@@ -93,12 +104,29 @@ CPU cores - for example '0,1' to only run processes on the first two cores.</p>
 
 <p><em>files</em>: A hash of configuration files to install - see below</p>
 
+<p><em>filestore</em>: The Puppet filestore location where the Tomcat tarball and Jolokia
+war file are downloaded from. Default: 'puppet:///files/tomcat'</p>
+
 <p><em>group</em>: The user''s primary group. Default: 'tomcat',</p>
 
 <p><em>java_home</em>: The base directory of the JDK installation to be used. Default:
-'/usr/java/latest',</p>
+'/usr/java/latest'</p>
 
 <p><em>java_opts</em>: Additional java command-line options to pass to the startup script</p>
+
+<p><em>jolokia</em>: Whether or not to install the jolokia war file and configure a
+separate service to run it. Default: false</p>
+
+<p><em>jolokia_address</em>: The address that the jolokia HTTP service listens on.
+Default: 'localhost'</p>
+
+<p><em>jolokia_port</em>: The port that the jolokia HTTP service listens on. Default:
+'8190'</p>
+
+<p><em>jolokia_version</em>: The version of the jolokia war file to download and install.
+Default: '1.1.0'</p>
+
+<p><em>localhost</em>: The localhost address to bind listen ports to. Default: 'localhost'</p>
 
 <p><em>logdir</em>: The base log directory. Default: '/var/logs/tomcat'</p>
 
@@ -135,35 +163,39 @@ templates before being delivered.</p>
 tomcat1 and tomcat2 users with:</p>
 
 <pre><code>tomcat::config:
-  bind_address: %{fqdn}
+  admin_user: 'admin'
+  admin_pass: 'admin'
 
 tomcat::files:
   conf/tomcat-users.xml:
-    source: 'puppet:///files/tomcat/dev/tomcat-users.xml'
+    source: 'puppet:///files/tomcat/dev/context.xml'
 
 tomcat:
   tomcat1:
+    config:
+      admin_pass: 'tinstaafl'
     templates:
-      conf/server.xml:
-        template: '/etc/puppet/templates/tomcat/dev1/server.xml.erb'
+      conf/tomcat-users.xml:
+        template: '/etc/puppet/templates/tomcat/dev1/tomcat-users.xml.erb'
   tomcat2:
+    config:
+      admin_pass: 'timtowtdi'
     templates:
-      conf/server.xml:
-        template: '/etc/puppet/templates/tomcat/dev2/server.xml.erb'
+      conf/tomcat-users.xml:
+        template: '/etc/puppet/templates/tomcat/dev2/tomcat-users.xml.erb'
 </code></pre>
 
 <p>Values set at the tomcat level as set for all instances so both the tomcat1 and
-tomcat2 instance would get the same tomcat-users.xml file.  Each instance would
-get their own server.xml file based on the template specified with instance
-variables (like basedir and logdir) and config variables (like bind_address
-above) substituted.</p>
+tomcat2 instance would get the same context.xml file.  Each instance would get
+their own tomcat-users.xml file based on the template specified with instance
+variables (like basedir and logdir) and config variables (like admin_user and
+admin_pass above) substituted.</p>
 
 <p>For example:</p>
 
-<pre><code>&lt;Connector address="&lt;%= @config['bind_address'] %&gt;"
-           port="8080" protocol="HTTP/1.1"
-           connectionTimeout="20000"
-           redirectPort="8443" compression="force"/&gt;
+<pre><code>&lt;user username="&lt;%= @admin_user %&gt;"
+      password="&lt;%= @admin_pass %&gt;"
+      roles="tomcat,manager-gui"/&gt;
 </code></pre>
 
 <p>All files and templates are relative to the product installation.  For example
@@ -174,18 +206,64 @@ path to the 'tomcat-users.xml' file would be
 <p>Note that the path specified by the 'template' parameter is on the Puppet
 master.</p>
 
+<h2>Default templates</h2>
+
+<p>There are default templates for conf/server.xml to listen on the specified
+bind_address and for conf/logging.properties to use the specified logdir.
+These defaults are only used if the template is not specified using the
+templates configuration.</p>
+
 <h2>Product files</h2>
 
-<p>Place the product zip files (eg. 'apache-tomcat-7.0.32.tar.gz') under a
-'tomcat' directory of the 'files' file store.  For example if
-/etc/puppet/fileserver.conf has:</p>
+<p>By default the product tar file (eg. 'apache-tomcat-7.0.32.tar.gz') is expected
+to be found under a 'tomcat' directory of the 'files' file store.  For example
+if /etc/puppet/fileserver.conf has:</p>
 
 <pre><code>[files]
 path /var/lib/puppet/files
 </code></pre>
 
-<p>then put the zip files in /var/lib/puppet/files/tomcat.  Any files specified
-with the 'files' parameter can also be placed in this directory.</p>
+<p>then put the tar file in /var/lib/puppet/files/tomcat.  Any files specified
+with the 'files' parameter can also be placed in this directory, as can the
+Jolokia war file.</p>
+
+<p>This location can be changed by setting the 'filestore' parameter.</p>
+
+<h2>Monitoring</h2>
+
+<p>The jolokia parameters enable JMX statistics to be queried over HTTP - for example:</p>
+
+<pre><code>$ curl http://localhost:8190/jolokia/read/java.lang:type=Memory/HeapMemoryUsage
+{"timestamp":1363883323,"status":200,"request":{"mbean":"java.lang:type=Memory"
+," attribute":"HeapMemoryUsage","type":"read"},"value":{"max":1908932608,"commi
+tted":1029046272,"init":1073741824,"used":155889168}}
+</code></pre>
+
+<p>To limit what what can be accessed a jolokia-access.xml can be included in the
+war file.  This is what I do to ensure read-only access:</p>
+
+<pre><code>$ cd /var/lib/puppet/files/tomcat
+$ wget http://labs.consol.de/maven/repository/org/jolokia/jolokia-war/1.1.0/jolokia-war-1.1.0.war
+$ vim jolokia-access.xml
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;restrict&gt;
+  &lt;commands&gt;
+    &lt;command&gt;read&lt;/command&gt;
+    &lt;command&gt;list&lt;/command&gt;
+    &lt;command&gt;version&lt;/command&gt;
+    &lt;command&gt;search&lt;/command&gt;
+  &lt;/commands&gt;
+  &lt;http&gt;
+    &lt;method&gt;get&lt;/method&gt;
+  &lt;/http&gt;
+&lt;/restrict&gt;
+$ mkdir -p WEB-INF/classes
+$ cp jolokia-access.xml WEB-INF/classes/
+$ zip -u jolokia-war-1.1.0.war WEB-INF/classes/jolokia-access.xml
+$ rm -rf WEB-INF
+</code></pre>
+
+<p>See <a href="http://www.jolokia.org/">http://www.jolokia.org/</a> for more information.</p>
 
 <h2>Support</h2>
 
