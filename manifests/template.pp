@@ -33,6 +33,7 @@ define tomcat::template(
       creates => "${product_dir}/${dir}",
       user    => $user,
       group   => $group,
+      require => Exec["tomcat-unpack-${user}"],
     }
   }
   file { "${product_dir}/${filename}":

@@ -15,6 +15,7 @@ define tomcat::file (
       creates => "${product_dir}/${dir}",
       user    => $user,
       group   => $group,
+      require => Exec["tomcat-unpack-${user}"],
     }
   }
   if $source {
