@@ -1,0 +1,5 @@
+#!/bin/bash
+PID=$(sv stat <%= @basedir %>/service/tomcat | perl -ne '/\(pid (\d+)\)/; print $1')
+<%= @java_home %>/bin/jstack \
+  -l $PID \
+  > <%= @logdir %>/thread_dump.$(date +%Y-%m-%d-%T)
