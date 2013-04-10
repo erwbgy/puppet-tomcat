@@ -2,10 +2,12 @@ define tomcat::install (
   $basedir,
   $filestore,
   $group,
+  $java_home,
   $jolokia,
   $jolokia_address,
   $jolokia_port,
   $jolokia_version,
+  $logdir,
   $ulimit_nofile,
   $user,
   $version,
@@ -63,5 +65,13 @@ define tomcat::install (
     ensure  => link,
     target  => $subdir,
     require => File[$basedir],
+  }
+  file { "${product_dir}/bin/thread_dump":
+    ensure  => present,
+    mode    => '0555',
+    owner   => $user,
+    group   => $group,
+    content => template('tomcat/thread_dump.erb'),
+    require => Exec["tomcat-unpack-${user}"],
   }
 }

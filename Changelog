@@ -1,3 +1,7 @@
+0.6.0:
+
+* Added a script to easily do a thread dump using jstack
+
 0.5.3:
 
 * Make the maximum number of open file descriptors configurable with the
