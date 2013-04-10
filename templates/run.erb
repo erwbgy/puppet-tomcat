@@ -1,5 +1,6 @@
 #!/bin/bash
 exec 2>&1
+ulimit -n <%= @ulimit_nofile %>
 export CATALINA_HOME=<%= @product_dir %>
 export CATALINA_BASE=$CATALINA_HOME
 mkdir -p $CATALINA_BASE/temp

@@ -22,6 +22,7 @@ define tomcat::instance (
   $remove_docs      = $::tomcat::remove_docs,
   $remove_examples  = $::tomcat::remove_examples,
   $templates        = $::tomcat::templates,
+  $ulimit_nofile    = $::tomcat::ulimit_nofile,
   $version          = $::tomcat::version,
   $workspace        = $::tomcat::workspace,
 ) {
@@ -54,6 +55,7 @@ define tomcat::instance (
     jolokia_address => $jolokia_address,
     jolokia_port    => $jolokia_port,
     jolokia_version => $jolokia_version,
+    ulimit_nofile   => $ulimit_nofile,
     user            => $user,
     version         => $version,
     workspace       => $workspace,
@@ -112,6 +114,7 @@ define tomcat::instance (
       min_mem         => $min_mem,
       mode            => $mode,
       product_dir     => $product_dir,
+      ulimit_nofile   => $ulimit_nofile,
       user            => $user,
       version         => $version,
       workspace       => $workspace,
@@ -162,6 +165,7 @@ define tomcat::instance (
     min_mem         => $min_mem,
     max_mem         => $max_mem,
     down            => $down,
+    ulimit_nofile   => $ulimit_nofile,
   }
 
 }

@@ -6,6 +6,7 @@ define tomcat::install (
   $jolokia_address,
   $jolokia_port,
   $jolokia_version,
+  $ulimit_nofile,
   $user,
   $version,
   $workspace,

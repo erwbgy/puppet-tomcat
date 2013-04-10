@@ -1,3 +1,8 @@
+0.5.3:
+
+* Make the maximum number of open file descriptors configurable with the
+default set to the hard limit.
+
 0.5.2:
 
 * Added a missing dependency causing the tarball to not be unpacked when

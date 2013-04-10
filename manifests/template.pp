@@ -20,6 +20,7 @@ define tomcat::template(
   $mode,
   $product_dir,
   $template,
+  $ulimit_nofile,
   $user,
   $version,
   $workspace,
