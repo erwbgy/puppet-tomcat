@@ -29,7 +29,7 @@ Example hiera config:
     
     tomcat::java_opts: '-Xms1536m -Xmx1536m -XX:MaxPermSize=512m'
 
-    tomcat::jolokia_version: '1.1.0'
+    tomcat::jolokia_version: '1.1.1'
     
     tomcat::version:   '7.0.37'
     
@@ -89,7 +89,7 @@ Default: 'localhost'
 '8190'
 
 *jolokia_version*: The version of the jolokia war file to download and install.
-Default: '1.1.0'
+Default: '1.1.1'
 
 *localhost*: The localhost address to bind listen ports to. Default: 'localhost'
 
@@ -204,7 +204,7 @@ To limit what what can be accessed a jolokia-access.xml can be included in the
 war file.  This is what I do to ensure read-only access:
 
     $ cd /var/lib/puppet/files/tomcat
-    $ wget http://labs.consol.de/maven/repository/org/jolokia/jolokia-war/1.1.0/jolokia-war-1.1.0.war
+    $ wget http://labs.consol.de/maven/repository/org/jolokia/jolokia-war/1.1.1/jolokia-war-1.1.1.war
     $ vim jolokia-access.xml
     <?xml version="1.0" encoding="utf-8"?>
     <restrict>
@@ -220,7 +220,7 @@ war file.  This is what I do to ensure read-only access:
     </restrict>
     $ mkdir -p WEB-INF/classes
     $ cp jolokia-access.xml WEB-INF/classes/
-    $ zip -u jolokia-war-1.1.0.war WEB-INF/classes/jolokia-access.xml
+    $ zip -u jolokia-war-1.1.1.war WEB-INF/classes/jolokia-access.xml
     $ rm -rf WEB-INF
 
 See http://www.jolokia.org/ for more information.
