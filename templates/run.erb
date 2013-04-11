@@ -9,8 +9,9 @@ export CATALINA_BASE=$CATALINA_HOME
 mkdir -p $CATALINA_BASE/temp
 export CATALINA_OPTS="-Xms<%= @min_mem %> -Xmx<%= @max_mem %> <%= @java_opts %>"
 <% if @gclog_enabled -%>
+# Enable garbage collector logging
 export CATALINA_OPTS="$CATALINA_OPTS -verbose:gc -Xloggc:<%= @logdir %>/tomcat/gc.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=<%= @gclog_numfiles %> -XX:GCLogFileSize=<%= @gclog_filesize %> -XX:+PrintGCDetails -XX:+PrintGCDateStamps"
-<% end %>
+<% end -%>
 export JAVA_HOME=<%= @java_home %>
 cd <%= @product_dir %>
 exec <% if @cpu_affinity %>taskset -c <%= @cpu_affinity %> <% end %>$CATALINA_HOME/bin/catalina.sh run
