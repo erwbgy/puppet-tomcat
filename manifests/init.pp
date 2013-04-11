@@ -5,6 +5,7 @@ class tomcat (
   $check_port       = '8080',
   $config           = {},
   $cpu_affinity     = undef,
+  $dependencies     = undef,
   $down             = false,
   $files            = {},
   $filestore        = 'puppet:///files/tomcat',

@@ -2,6 +2,9 @@
 
 * Added a script to easily do a thread dump using jstack
 
+* Allow dependencies on other Runit services to be listed.  These services
+must all be up before the Tomcat service will be started.
+
 0.5.3:
 
 * Make the maximum number of open file descriptors configurable with the

@@ -4,6 +4,7 @@ define tomcat::template(
   $check_port,
   $config,
   $cpu_affinity,
+  $dependencies,
   $down,
   $filestore,
   $group,

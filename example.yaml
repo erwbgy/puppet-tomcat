@@ -34,6 +34,8 @@ tomcat::instances:
     jolokia_port:    '8190'
     config:
       admin_user: 'fbloggs'
+    dependencies:
+      - '/apps/activemq1/service/activemq'
   tomcat2:
     basedir:      '/apps/tomcat2'
     bind_address: %{ipaddress_eth0_2}

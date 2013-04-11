@@ -44,6 +44,8 @@ Example hiera config:
         jolokia_port:    '8190'
         config:
           admin_user:    'fbloggs'
+        dependencies:
+          - '/apps/activemq1/service/activemq'
       tomcat2:
         basedir:         '/apps/tomcat2'
         bind_address:    %{ipaddress_eth0_2}
@@ -63,6 +65,9 @@ bind_address) for it to be considered up. Default: '8080'
 
 *config*: A hash of additional configuration variables that will be set when
 templates are processed.
+
+*dependencies*: A list of Runit service directories whose services must be up
+before the Tomcat service is started.
 
 *cpu_affinity*: Enable CPU affinity to be set to only run processes on specific
 CPU cores - for example '0,1' to only run processes on the first two cores.
@@ -228,6 +233,27 @@ war file.  This is what I do to ensure read-only access:
     $ rm -rf WEB-INF
 
 See http://www.jolokia.org/ for more information.
+
+## Dependencies
+
+It must be possible to check the status (using 'sv stat') of each of the
+service directories specified as dependencies.  This is problematic for
+services running as different users as the supervise directory and supervise/ok
+file are only accessible by the owner. 
+
+One way to resolve this is to add the user to the destination group and modify
+the group permissions - for example:
+
+    $ usermod -a -G activemq tomcat1
+    $ cd /apps/activemq1/service/activemq
+    $ find . -follow -type d -name 'supervise' -exec chmod g+x {} \;
+    $ find . -follow -type p -name 'ok' -exec chmod g+w {} \;
+
+Another way is to use ACLs to grant the user the required permissions - for example:
+
+    $ cd /apps/activemq1/service/activemq
+    $ find . -follow -type d -name 'supervise' -exec setfacl -m u:tomcat1:x {} \;
+    $ find . -follow -type p -name 'ok' -exec setfacl -m u:tomcat1:w {} \; 
 
 ## Support
 

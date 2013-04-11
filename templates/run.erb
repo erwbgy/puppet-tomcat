@@ -1,5 +1,8 @@
 #!/bin/bash
 exec 2>&1
+<% if @dependencies -%>
+sv -w30 start <% @dependencies.each do |service| -%><%= service %> <% end %>|| exit 1
+<% end -%>
 ulimit -n <%= @ulimit_nofile %>
 export CATALINA_HOME=<%= @product_dir %>
 export CATALINA_BASE=$CATALINA_HOME
