@@ -1,9 +1,11 @@
 0.6.0:
 
-* Added a script to easily do a thread dump using jstack
+* Added a script to easily do a thread dump using jstack.
 
-* Allow dependencies on other Runit services to be listed.  These services
-must all be up before the Tomcat service will be started.
+* Allow dependencies on other Runit services that must all be up before the
+Tomcat service will be started.
+
+* Enable garbage collector logging to be turned on.
 
 0.5.3:
 

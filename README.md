@@ -77,6 +77,15 @@ CPU cores - for example '0,1' to only run processes on the first two cores.
 *filestore*: The Puppet filestore location where the Tomcat tarball and Jolokia
 war file are downloaded from. Default: 'puppet:///files/tomcat'
 
+*gclog_enabled*:  Whether or not Garbage Collector logging is enabled. Default:
+'false'
+
+*gclog_numfiles*: The number of garbage collector log files to keep. Default:
+'5'
+
+*gclog_filesize*: The maximum size of a garbage collector log file before it is
+rotated. Default: '100M'
+
 *group*: The user''s primary group. Default: 'tomcat',
 
 *java_home*: The base directory of the JDK installation to be used. Default:
