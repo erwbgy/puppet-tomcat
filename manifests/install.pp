@@ -44,6 +44,10 @@ define tomcat::install (
     notify      => Exec["tomcat-fix-ownership-${user}"],
     require     => [ File[$basedir], File["${workspace}/${tarball}"] ],
   }
+  exec { "tomcat-fix-ownership-${user}":
+    command     => "/bin/chown -R ${user}:${group} ${basedir}/${subdir}",
+    refreshonly => true,
+  }
   file { "${basedir}/${subdir}":
     ensure  => directory,
     owner   => $user,
@@ -63,16 +67,12 @@ define tomcat::install (
       require => File["${basedir}/${subdir}/jolokia"],
     }
   }
-  exec { "tomcat-fix-ownership-${user}":
-    command     => "/bin/chown -R ${user}:${group} ${basedir}/${subdir}",
-    refreshonly => true,
-  }
   file { "${basedir}/tomcat":
     ensure  => link,
     target  => $subdir,
     require => File[$basedir],
   }
-  file { "${product_dir}/bin/thread_dump":
+  file { "${basedir}/${subdir}/bin/thread_dump":
     ensure  => present,
     mode    => '0555',
     owner   => $user,
