@@ -1,3 +1,9 @@
+0.6.1:
+
+* Fix reference to undefined product_dir variable and ensure that thread_dump
+and jolokia changes are made even if the product tarball has already been
+unpacked.
+
 0.6.0:
 
 * Added a script to easily do a thread dump using jstack.
