@@ -44,11 +44,17 @@ define tomcat::install (
     notify      => Exec["tomcat-fix-ownership-${user}"],
     require     => [ File[$basedir], File["${workspace}/${tarball}"] ],
   }
+  file { "${basedir}/${subdir}":
+    ensure  => directory,
+    owner   => $user,
+    group   => $group,
+    recurse => true,
+  }
   if $jolokia {
     file { "${basedir}/${subdir}/jolokia":
       ensure  => directory,
       mode    => '0755',
-      require => Exec["tomcat-unpack-${user}"],
+      require => File["${basedir}/${subdir}"],
     }
     file { "${basedir}/${subdir}/jolokia/jolokia.war":
       ensure  => present,
@@ -72,6 +78,6 @@ define tomcat::install (
     owner   => $user,
     group   => $group,
     content => template('tomcat/thread_dump.erb'),
-    require => Exec["tomcat-unpack-${user}"],
+    require => File["${basedir}/${subdir}"],
   }
 }
