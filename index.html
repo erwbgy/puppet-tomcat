@@ -63,7 +63,7 @@ tomcat::java_home: '/usr/java/jdk1.7.0_09'
 
 tomcat::java_opts: '-Xms1536m -Xmx1536m -XX:MaxPermSize=512m'
 
-tomcat::jolokia_version: '1.1.0'
+tomcat::jolokia_version: '1.1.1'
 
 tomcat::version:   '7.0.37'
 
@@ -78,6 +78,8 @@ tomcat::instances:
     jolokia_port:    '8190'
     config:
       admin_user:    'fbloggs'
+    dependencies:
+      - '/apps/activemq1/service/activemq'
   tomcat2:
     basedir:         '/apps/tomcat2'
     bind_address:    %{ipaddress_eth0_2}
@@ -99,6 +101,9 @@ bind_address) for it to be considered up. Default: '8080'</p>
 <p><em>config</em>: A hash of additional configuration variables that will be set when
 templates are processed.</p>
 
+<p><em>dependencies</em>: A list of Runit service directories whose services must be up
+before the Tomcat service is started.</p>
+
 <p><em>cpu_affinity</em>: Enable CPU affinity to be set to only run processes on specific
 CPU cores - for example '0,1' to only run processes on the first two cores.</p>
 
@@ -106,6 +111,15 @@ CPU cores - for example '0,1' to only run processes on the first two cores.</p>
 
 <p><em>filestore</em>: The Puppet filestore location where the Tomcat tarball and Jolokia
 war file are downloaded from. Default: 'puppet:///files/tomcat'</p>
+
+<p><em>gclog_enabled</em>:  Whether or not Garbage Collector logging is enabled. Default:
+'false'</p>
+
+<p><em>gclog_numfiles</em>: The number of garbage collector log files to keep. Default:
+'5'</p>
+
+<p><em>gclog_filesize</em>: The maximum size of a garbage collector log file before it is
+rotated. Default: '100M'</p>
 
 <p><em>group</em>: The user''s primary group. Default: 'tomcat',</p>
 
@@ -124,7 +138,7 @@ Default: 'localhost'</p>
 '8190'</p>
 
 <p><em>jolokia_version</em>: The version of the jolokia war file to download and install.
-Default: '1.1.0'</p>
+Default: '1.1.1'</p>
 
 <p><em>localhost</em>: The localhost address to bind listen ports to. Default: 'localhost'</p>
 
@@ -141,6 +155,10 @@ Default: '1.1.0'</p>
 <p><em>remove_examples</em>: Whether or not to remove the Tomcat examples under webapps. Default: true</p>
 
 <p><em>templates</em>: A hash of configuration templates to process and install - see below</p>
+
+<p><em>ulimit_nofile</em>: The maximum number of open file descriptors the java process
+is allowed.  Default is '$(ulimit -H -n)' which sets the value to the hard
+limit in /etc/security/limits.conf (or equivalent) for the user.</p>
 
 <p><em>version</em>: The version of the product to install (eg. 7.0.37). <strong>Required</strong>.</p>
 
@@ -243,7 +261,7 @@ tted":1029046272,"init":1073741824,"used":155889168}}
 war file.  This is what I do to ensure read-only access:</p>
 
 <pre><code>$ cd /var/lib/puppet/files/tomcat
-$ wget http://labs.consol.de/maven/repository/org/jolokia/jolokia-war/1.1.0/jolokia-war-1.1.0.war
+$ wget http://labs.consol.de/maven/repository/org/jolokia/jolokia-war/1.1.1/jolokia-war-1.1.1.war
 $ vim jolokia-access.xml
 &lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;restrict&gt;
@@ -259,11 +277,34 @@ $ vim jolokia-access.xml
 &lt;/restrict&gt;
 $ mkdir -p WEB-INF/classes
 $ cp jolokia-access.xml WEB-INF/classes/
-$ zip -u jolokia-war-1.1.0.war WEB-INF/classes/jolokia-access.xml
+$ zip -u jolokia-war-1.1.1.war WEB-INF/classes/jolokia-access.xml
 $ rm -rf WEB-INF
 </code></pre>
 
 <p>See <a href="http://www.jolokia.org/">http://www.jolokia.org/</a> for more information.</p>
+
+<h2>Dependencies</h2>
+
+<p>It must be possible to check the status (using 'sv stat') of each of the
+service directories specified as dependencies.  This is problematic for
+services running as different users as the supervise directory and supervise/ok
+file are only accessible by the owner. </p>
+
+<p>One way to resolve this is to add the user to the destination group and modify
+the group permissions - for example:</p>
+
+<pre><code>$ usermod -a -G activemq tomcat1
+$ cd /apps/activemq1/service/activemq
+$ find . -follow -type d -name 'supervise' -exec chmod g+x {} \;
+$ find . -follow -type p -name 'ok' -exec chmod g+w {} \;
+</code></pre>
+
+<p>Another way is to use ACLs to grant the user the required permissions - for example:</p>
+
+<pre><code>$ cd /apps/activemq1/service/activemq
+$ find . -follow -type d -name 'supervise' -exec setfacl -m u:tomcat1:x {} \;
+$ find . -follow -type p -name 'ok' -exec setfacl -m u:tomcat1:w {} \; 
+</code></pre>
 
 <h2>Support</h2>
 
