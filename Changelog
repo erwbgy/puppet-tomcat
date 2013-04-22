@@ -1,3 +1,8 @@
+0.6.2:
+
+* Give context to the thread dump by using top to show what the threads
+running as the current user are doing.
+
 0.6.1:
 
 * Fix reference to undefined product_dir variable and ensure that thread_dump
