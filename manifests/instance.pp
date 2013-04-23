@@ -89,18 +89,17 @@ define tomcat::instance (
     }
   }
 
-  prefix($files, $product_dir)
-  create_resources( 'tomcat::file', $files,
+  create_resources_with_prefix( 'tomcat::file', $files,
     {
       group       => $group,
       mode        => $mode,
       product_dir => $product_dir,
       user        => $user,
-    }
+    },
+    "${product_dir}/",
   )
 
-  prefix($templates, $product_dir)
-  create_resources( 'tomcat::template', $templates,
+  create_resources_with_prefix( 'tomcat::template', $templates,
     {
       basedir         => $basedir,
       bind_address    => $bind_address,
@@ -127,7 +126,8 @@ define tomcat::instance (
       user            => $user,
       version         => $version,
       workspace       => $workspace,
-    }
+    },
+    "${product_dir}/",
   )
 
   if $remove_docs {
