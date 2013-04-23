@@ -31,7 +31,7 @@ define tomcat::instance (
   $workspace        = $::tomcat::workspace,
 ) {
   if ! $version {
-    fail( "tomcat version MUST be set" )
+    fail( 'tomcat version MUST be set' )
   }
   $user        = $title
   $product     = 'apache-tomcat'
