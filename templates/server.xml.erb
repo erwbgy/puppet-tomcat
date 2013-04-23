@@ -138,7 +138,7 @@
              Note: The pattern used is equivalent to using pattern="common" -->
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="<%= @logdir %>/tomcat"
                prefix="<%= @localhost %>_access_log." suffix=".txt"
-               pattern="%h %l %u %t &quot;%r&quot; %s %b" />
+               pattern="%h %I %D %t &quot;%r&quot; %s %b" />
 
       </Host>
     </Engine>
