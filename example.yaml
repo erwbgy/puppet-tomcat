@@ -10,17 +10,20 @@ tomcat::files:
 tomcat::templates:
   conf/tomcat-users.xml:
     mode:     '0440'
-    template: '/var/lib/puppet/files/tomcat/myapp/tomcat-users.xml.erb'
+    template: '/etc/puppet/templates/myapp/tomcat-users.xml.erb'
 
 tomcat::filestore: 'puppet://files/tomcat'
 
 tomcat::group:     'tomcat'
 
-tomcat::java_home: '/usr/java/jdk1.7.0_09'
+tomcat::java_home: '/usr/java/jdk1.7.0_17'
 
-tomcat::java_opts: '-Xms1536m -Xmx1536m -XX:MaxPermSize=512m'
+tomcat::java_opts: '-XX:MaxPermSize=512m'
 
 tomcat::jolokia_version: '1.1.0'
+
+tomcat::min_mem:   '256m'
+tomcat::max_mem:   '512m'
 
 tomcat::version:   '7.0.37'
 
@@ -30,20 +33,24 @@ tomcat::gclog_filesize: '512M'
 
 tomcat::instances:
   tomcat1:
-    basedir:      '/apps/tomcat1'
-    bind_address: %{ipaddress_eth0_1}
-    logdir:       '/apps/tomcat1/logs'
-    jolokia:      'true'
+    basedir:         '/apps/tomcat1'
+    bind_address:    "%{ipaddress_eth0_1}"
+    logdir:          '/apps/tomcat1/logs'
+    jolokia:         'true'
     jolokia_address: %{ipaddress_eth0_1}
     jolokia_port:    '8190'
     config:
-      admin_user: 'fbloggs'
+      admin_user:    'fbloggs'
     dependencies:
       - '/apps/activemq1/service/activemq'
   tomcat2:
     basedir:      '/apps/tomcat2'
-    bind_address: %{ipaddress_eth0_2}
+    bind_address: "%{ipaddress_eth0_2}"
     logdir:       '/apps/tomcat2/logs'
     config:
       admin_user: 'jbloggs'
+    templates:
+      conf/server.xml:
+        mode:     '0440'
+        template: '/etc/puppet/templates/myapp/tomcat-server.xml.erb'
 
