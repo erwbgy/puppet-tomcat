@@ -55,22 +55,25 @@ tomcat::files:
 tomcat::templates:
   conf/tomcat-users.xml:
     mode:     '0440'
-    template: '/var/lib/puppet/files/tomcat/myapp/tomcat-users.xml.erb'
+    template: '/etc/puppet/templates/myapp/tomcat-users.xml.erb'
 
 tomcat::group:     'tomcat'
 
-tomcat::java_home: '/usr/java/jdk1.7.0_09'
+tomcat::java_home: '/usr/java/jdk1.7.0_17'
 
-tomcat::java_opts: '-Xms1536m -Xmx1536m -XX:MaxPermSize=512m'
+tomcat::java_opts: '-XX:MaxPermSize=512m'
 
 tomcat::jolokia_version: '1.1.1'
+
+tomcat::min_mem:   '256m'
+tomcat::max_mem:   '512m'
 
 tomcat::version:   '7.0.37'
 
 tomcat::instances:
   tomcat1:
     basedir:         '/apps/tomcat1'
-    bind_address:    %{ipaddress_eth0_1}
+    bind_address:    "%{ipaddress_eth0_1}"
     localhost:       '127.0.0.101'
     logdir:          '/apps/tomcat1/logs'
     jolokia:         'true'
@@ -82,11 +85,15 @@ tomcat::instances:
       - '/apps/activemq1/service/activemq'
   tomcat2:
     basedir:         '/apps/tomcat2'
-    bind_address:    %{ipaddress_eth0_2}
+    bind_address:    "%{ipaddress_eth0_2}"
     localhost:       '127.0.0.102'
     logdir:          '/apps/tomcat2/logs'
     config:
       admin_user:    'jbloggs'
+    templates:
+      conf/server.xml:
+        mode:     '0440'
+        template: '/etc/puppet/templates/myapp/tomcat-server.xml.erb'
 </code></pre>
 
 <h2>tomcat parameters</h2>
