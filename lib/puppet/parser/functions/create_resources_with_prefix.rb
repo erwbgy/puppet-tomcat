@@ -4,43 +4,53 @@ Puppet::Parser::Functions::newfunction(:create_resources_with_prefix, :arity => 
     This function takes two mandatory arguments: a resource type, and a hash describing
     a set of resources. The hash should be in the form `{title => {parameters} }`:
 
-        # A hash of user resources:
-        $myusers = {
-          'nick' => { uid    => '1330',
-                      group  => allstaff,
-                      groups => ['developers', 'operations', 'release'], }
-          'dan'  => { uid    => '1308',
-                      group  => allstaff,
-                      groups => ['developers', 'prosvc', 'release'], }
+        # A hash of file resources:
+        $myfiles = {
+          'conf/server.xml' => { 
+            template => '/path/to/server.xml.erb'
+          }
+          'conf/tomcat-users.xml'  => {
+            template => '/path/to/tomcat-users.xml.erb'
+          }
         }
 
-        create_resources_with_prefix(user, $myusers)
+        create_resources_with_prefix(file, $myfiles)
 
     A third, optional parameter may be given, also as a hash:
 
         $defaults = {
           'ensure'   => present,
-          'provider' => 'ldap',
+          'user'     => 'tomcat',
+          'group'    => 'tomcat',
         }
 
-        create_resources_with_prefix(user, $myusers, $defaults)
+        create_resources_with_prefix(file, $myfiles, $defaults)
 
     The values given on the third argument are added to the parameters of each resource
     present in the set given on the second argument. If a parameter is present on both
     the second and third arguments, the one on the second argument takes precedence.
 
+    A fourth, optional parameter may be given as a string to prefix to the title before
+    the resource is created:
+
+        $prefix = '/opt/tomcat'
+
+        create_resources_with_prefix(file, $myfiles, $defaults, $prefix)
+
+    So for example 'conf/server.xml' above would become '/opt/tomcat/conf/server.xml'.
+
     This function can be used to create defined resources and classes, as well
     as native resources.
 
     Virtual and Exported resources may be created by prefixing the type name
-    with @ or @@ respectively.  For example, the $myusers hash may be exported
+    with @ or @@ respectively.  For example, the $myfile hash may be exported
     in the following manner:
 
-        create_resources_with_prefix("@@user", $myusers)
+        create_resources_with_prefix("@@file", $myfile)
 
-    The $myusers may be declared as virtual resources using:
+    The $myfile may be declared as virtual resources using:
 
-        create_resources_with_prefix("@user", $myusers)
+        create_resources_with_prefix("@file", $myfile)
 
   ENDHEREDOC
   raise ArgumentError, ("create_resources_with_prefix(): wrong number of arguments (#{args.length}; must be 2, 3 or 4)") if args.length > 4
