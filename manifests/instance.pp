@@ -89,6 +89,7 @@ define tomcat::instance (
     }
   }
 
+  prefix($files, $product_dir)
   create_resources( 'tomcat::file', $files,
     {
       group       => $group,
@@ -98,6 +99,7 @@ define tomcat::instance (
     }
   )
 
+  prefix($templates, $product_dir)
   create_resources( 'tomcat::template', $templates,
     {
       basedir         => $basedir,

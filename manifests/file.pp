@@ -9,17 +9,17 @@ define tomcat::file (
   $filename = $title
   if $filename =~ /^(.*?)\/([^\/]+)$/ {
     $dir = $1
-    exec { "create-parent-dir-${product_dir}/${filename}":
+    exec { "create-parent-dir-${filename}":
       path    => [ '/bin', '/usr/bin' ],
-      command => "mkdir -p ${product_dir}/${dir}",
-      creates => "${product_dir}/${dir}",
+      command => "mkdir -p ${dir}",
+      creates => $dir,
       user    => $user,
       group   => $group,
       require => Exec["tomcat-unpack-${user}"],
     }
   }
   if $source {
-    file { "${product_dir}/${filename}":
+    file { $filename:
       ensure   => present,
       owner    => $user,
       group    => $group,
@@ -27,12 +27,12 @@ define tomcat::file (
       source   => $source,
       require  => Exec[
         "tomcat-unpack-${user}",
-        "create-parent-dir-${product_dir}/${filename}"
+        "create-parent-dir-${filename}"
       ],
     }
   }
   elsif $content {
-    file { "${product_dir}/${filename}":
+    file { $filename:
       ensure   => present,
       owner    => $user,
       group    => $group,
@@ -40,7 +40,7 @@ define tomcat::file (
       content  => $content,
       require  => Exec[
         "tomcat-unpack-${user}",
-        "create-parent-dir-${product_dir}/${filename}"
+        "create-parent-dir-${filename}"
       ],
     }
   }
