@@ -1,10 +1,12 @@
+0.6.3:
+
+* Fixed duplicate declaration errors when using the same templates or files
+with multiple instances.
+
 0.6.2:
 
 * Give context to the thread dump by using top to show what the threads
 running as the current user are doing.
-
-* Fixed duplicate declaration errors when using the same templates or files
-with multiple instances.
 
 0.6.1:
 

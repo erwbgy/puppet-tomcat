@@ -1,5 +1,5 @@
 name    'erwbgy-tomcat'
-version '0.6.2'
+version '0.6.3'
 source 'https://github.com/erwbgy/puppet-tomcat.git'
 author 'erwbgy'
 license 'Apache License, Version 2.0'
