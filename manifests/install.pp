@@ -53,6 +53,7 @@ define tomcat::install (
     owner   => $user,
     group   => $group,
     recurse => true,
+    require => Exec["tomcat-unpack-${user}"],
   }
   if $jolokia {
     file { "${basedir}/${subdir}/jolokia":

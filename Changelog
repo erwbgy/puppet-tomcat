@@ -3,6 +3,9 @@
 * Changed the access log pattern in the default server.xml to log the thread
 id and response time rather than hyphens for logical hostname and remote user
 
+* Added missing require that resulted in the tarball not being unpacked with
+related errors about missing directories.
+
 0.6.3:
 
 * Fixed duplicate declaration errors when using the same templates or files
