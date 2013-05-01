@@ -37,11 +37,18 @@ else {
   my $response = $json->decode($res->content);
 
   my %data;
-  foreach (
+  foreach my $attr (
     'HeapMemoryUsage',
     'NonHeapMemoryUsage',
   ) {
-    $data{$_} = $response->[0]->{'value'}{$_};
+    foreach my $subattr (
+      'committed',
+      'init',
+      'max',
+      'used',
+    ) {
+      $data{"${attr}-${subattr}"} = $response->[0]->{'value'}{$attr}{$subattr};
+    }
   }
   foreach (
     'FreePhysicalMemorySize',
@@ -73,15 +80,21 @@ else {
 
   open(OUTPUT, ">>$logfile") or die "$!\n";
 
-  # Timestamp;Hostname;HeapMemoryUsage;NonHeapMemoryUsage;FreePhysicalMemorySize;FreeSwapSpaceSize;CommittedVirtualMemorySize;CommittedVirtualMemorySize;ProcessCpuLoad;SystemCpuLoad;SystemLoadAverage;OpenFileDescriptorCount
+  # Timestamp;Hostname;HeapMemoryUsage-committed;HeapMemoryUsage-init;HeapMemoryUsage-max;HeapMemoryUsage-used;NonHeapMemoryUsage-committed;NonHeapMemoryUsage-init;NonHeapMemoryUsage-max;NonHeapMemoryUsage-used;FreePhysicalMemorySize;FreeSwapSpaceSize;CommittedVirtualMemorySize;CommittedVirtualMemorySize;ProcessCpuLoad;SystemCpuLoad;SystemLoadAverage;OpenFileDescriptorCount
   my @message;
   push @message, $timestamp;
   push @message, hostname;
   $output->{'@fields'}{'Timestamp'} = $timestamp;
   $output->{'@fields'}{'Hostname'}  = hostname;
   foreach (
-    'HeapMemoryUsage',
-    'NonHeapMemoryUsage',
+    'HeapMemoryUsage-committed',
+    'HeapMemoryUsage-init',
+    'HeapMemoryUsage-max',
+    'HeapMemoryUsage-used',
+    'NonHeapMemoryUsage-committed',
+    'NonHeapMemoryUsage-init',
+    'NonHeapMemoryUsage-max',
+    'NonHeapMemoryUsage-used',
     'FreePhysicalMemorySize',
     'FreeSwapSpaceSize',
     'CommittedVirtualMemorySize',
