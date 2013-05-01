@@ -17,6 +17,7 @@ define tomcat::service (
   $java_opts,
   $jolokia,
   $jolokia_address,
+  $jolokia_cron,
   $jolokia_port,
   $jolokia_version,
   $max_mem,
@@ -59,5 +60,12 @@ define tomcat::service (
     group   => $group,
     replace => false,
     require => Runit::Service["${user}-${product}"],
+  }
+  if $jolokia_cron {
+    cron { 'tomcat-jvm_memory_os':
+      command => "${basedir}/${product}-${version}/bin/jvm_memory_os",
+      user    => $user,
+      require => File["${basedir}/${product}-${version}/bin/jvm_memory_os"],
+    }
   }
 }

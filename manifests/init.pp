@@ -19,6 +19,7 @@ class tomcat (
   $java_opts        = '',
   $jolokia          = false,
   $jolokia_address  = 'localhost',
+  $jolokia_cron     = true,
   $jolokia_port     = '8190',
   $jolokia_version  = '1.1.0',
   $max_mem          = '2048m',

@@ -1,7 +1,12 @@
-0.6.5:
+0.7.0:
 
 * Avoid recursively scanning the Tomcat installation directory as this
 significantly increases execution time (by almost 5 minutes in my case).
+
+* If jolokia is enabled then run a JVM memory and OS monitoring script from
+cron every minute writing to a local log file.
+
+* Added sample script for monitoring request processing using Jolokia.
 
 0.6.4:
 

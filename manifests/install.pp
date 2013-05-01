@@ -5,6 +5,7 @@ define tomcat::install (
   $java_home,
   $jolokia,
   $jolokia_address,
+  $jolokia_cron,
   $jolokia_port,
   $jolokia_version,
   $logdir,
@@ -72,10 +73,22 @@ define tomcat::install (
     target  => $subdir,
     require => File[$basedir],
   }
+  file { "${basedir}/${subdir}/bin/jvm_memory_os":
+    ensure  => present,
+    mode    => '0555',
+    content => template('tomcat/jvm_memory_os.erb'),
+    require => File["${basedir}/${subdir}"],
+  }
   file { "${basedir}/${subdir}/bin/thread_dump":
     ensure  => present,
     mode    => '0555',
     content => template('tomcat/thread_dump.erb'),
+    require => File["${basedir}/${subdir}"],
+  }
+  file { "${basedir}/${subdir}/bin/request_processor":
+    ensure  => present,
+    mode    => '0555',
+    content => template('tomcat/request_processor.erb'),
     require => File["${basedir}/${subdir}"],
   }
 }

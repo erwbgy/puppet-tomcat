@@ -106,6 +106,9 @@ separate service to run it. Default: false
 *jolokia_address*: The address that the jolokia HTTP service listens on.
 Default: 'localhost'
 
+*jolokia_cron*: Whether or not to install cron jobs to run the Jolokia JMX
+monitoring scripts every minute writing to local log files. Default: 'true'
+
 *jolokia_port*: The port that the jolokia HTTP service listens on. Default:
 '8190'
 
@@ -241,6 +244,7 @@ war file.  This is what I do to ensure read-only access:
       </commands>
       <http>
         <method>get</method>
+        <method>post</method>
       </http>
     </restrict>
     $ mkdir -p WEB-INF/classes
@@ -249,6 +253,12 @@ war file.  This is what I do to ensure read-only access:
     $ rm -rf WEB-INF
 
 See http://www.jolokia.org/ for more information.
+
+If jolokia support is enabled then a JVM memory and OS monitoring script is run
+from cron every minute writing to a local log file.
+
+A sample request monitoring script that uses Jolokia is also included.  You can find
+it under the bin directory of your Tomcat installation.
 
 ## Dependencies
 
