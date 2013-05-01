@@ -62,7 +62,7 @@ define tomcat::service (
     require => Runit::Service["${user}-${product}"],
   }
   if $jolokia_cron {
-    cron { 'tomcat-jvm_memory_os':
+    cron { "tomcat-${user}-jvm_memory_os":
       command => "${basedir}/${product}-${version}/bin/jvm_memory_os",
       user    => $user,
       require => File["${basedir}/${product}-${version}/bin/jvm_memory_os"],
