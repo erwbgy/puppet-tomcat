@@ -1,0 +1,100 @@
+#!/usr/bin/env perl
+use JSON;
+use HTTP::Request::Common qw(POST);
+use LWP::UserAgent;
+use POSIX qw(strftime);
+use Sys::Hostname;
+use warnings;
+use strict;
+
+my $url = 'http://<%= @jolokia_address %>:<%= @jolokia_port %>/jolokia';
+
+my $request_data = <<EOT;
+[
+ {
+   "mbean":"java.lang:type=Memory",
+   "attribute":["HeapMemoryUsage","NonHeapMemoryUsage"],
+   "type":"READ"
+ },
+ {
+   "mbean":"java.lang:type=OperatingSystem",
+   "attribute":["FreePhysicalMemorySize","FreeSwapSpaceSize","ProcessCpuLoad","SystemLoadAverage","OpenFileDescriptorCount","CommittedVirtualMemorySize","SystemCpuLoad"],
+   "type":"READ"
+ }
+]
+EOT
+
+my $ua  = LWP::UserAgent->new;
+my $req = POST $url, Content => $request_data;
+my $res = $ua->request($req);
+
+unless ($res->is_success) {
+  warn $res->status_line, "\n";
+}
+else {
+  my $json = JSON->new();
+  $json->canonical(1);
+  my $response = $json->decode($res->content);
+
+  my %data;
+  foreach (
+    'HeapMemoryUsage',
+    'NonHeapMemoryUsage',
+  ) {
+    $data{$_} = $response->[0]->{'value'}{$_};
+  }
+  foreach (
+    'FreePhysicalMemorySize',
+    'FreeSwapSpaceSize',
+    'CommittedVirtualMemorySize',
+    'ProcessCpuLoad',
+    'SystemCpuLoad',
+    'SystemLoadAverage',
+    'OpenFileDescriptorCount',
+  ) {
+    $data{$_} = $response->[1]->{'value'}{$_};
+  }
+
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+  $year += 1900;
+  $mon++;
+  $mon  = sprintf("%02d",$mon);
+  $mday = sprintf("%02d",$mday);
+  my $logfile = "/apps/tomcat1/logs/jvm_memory_os-${year}-${mon}-${mday}.log";
+
+  my $output;
+  $output->{'@source'} = $url;
+  $output->{'@source_host'} = hostname;
+  $output->{'@source_path'} = $logfile;
+  $output->{'@tags'} = [ 'jvm_memory_os' ];
+
+  my $timestamp = strftime("%F %T", localtime($response->[0]->{'timestamp'}));
+  $output->{'@timestamp'} = $timestamp;
+
+  open(OUTPUT, ">>$logfile") or die "$!\n";
+
+  # Timestamp;Hostname;HeapMemoryUsage;NonHeapMemoryUsage;FreePhysicalMemorySize;FreeSwapSpaceSize;CommittedVirtualMemorySize;CommittedVirtualMemorySize;ProcessCpuLoad;SystemCpuLoad;SystemLoadAverage;OpenFileDescriptorCount
+  my @message;
+  push @message, $timestamp;
+  push @message, hostname;
+  $output->{'@fields'}{'Timestamp'} = $timestamp;
+  $output->{'@fields'}{'Hostname'}  = hostname;
+  foreach (
+    'HeapMemoryUsage',
+    'NonHeapMemoryUsage',
+    'FreePhysicalMemorySize',
+    'FreeSwapSpaceSize',
+    'CommittedVirtualMemorySize',
+    'ProcessCpuLoad',
+    'SystemCpuLoad',
+    'SystemLoadAverage',
+    'OpenFileDescriptorCount',
+  ) {
+    push @message, $data{$_};
+    $output->{'@fields'}{$_} = $data{$_};
+  }
+  $output->{'@message'} = join(';', @message);
+  print OUTPUT $json->encode($output) . "\n";
+
+  close(OUTPUT);
+}
