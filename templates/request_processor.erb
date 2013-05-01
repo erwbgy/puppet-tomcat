@@ -1,0 +1,122 @@
+#!/usr/bin/env perl
+use JSON;
+use LWP::UserAgent;
+use POSIX qw(strftime);
+use Sys::Hostname;
+use warnings;
+use strict;
+
+my $url = 'http://<%= @jolokia_address %>:<%= @jolokia_port %>/jolokia/read/Catalina:type=RequestProcessor,worker="http-bio-<%= @bind_address %>-<%= @check_port %>",*';
+my $global_url = 'http://<%= @jolokia_address %>:<%= @jolokia_port %>/jolokia/read/Catalina:name="http-bio-<%= @bind_address %>-<%= @check_port %>",type=GlobalRequestProcessor';
+
+my $ua  = LWP::UserAgent->new;
+my $req = HTTP::Request->new(GET => $url);
+my $res = $ua->request($req);
+
+unless ($res->is_success) {
+  warn $res->status_line, "\n";
+}
+else {
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+  $year += 1900;
+  $mon++;
+  $mon  = sprintf("%02d",$mon);
+  $mday = sprintf("%02d",$mday);
+  my $logfile = "<%= @logdir %>/request_processor_<%= @check_port %>-${year}-${mon}-${mday}.log";
+
+  my $output;
+  $output->{'@source'} = $url;
+  $output->{'@source_host'} = hostname;
+  $output->{'@source_path'} = $logfile;
+  $output->{'@tags'} = [ 'tomcat-RequestProcessor' ];
+
+  my $json = JSON->new();
+  $json->canonical(1);
+  my $content = $json->decode($res->content);
+
+  my $timestamp = strftime("%F %T", localtime($content->{'timestamp'}));
+  $output->{'@timestamp'} = $timestamp;
+
+  open(OUTPUT, ">>$logfile") or die "$!\n";
+
+  my $global = undef;
+  foreach my $entry (sort keys %{ $content->{'value'} }) {
+    $entry =~ /^Catalina:name=(.*?),/;
+    my $name = $1;
+    # Timestamp;Hostname;Name;errorCount;bytesReceived;bytesSent;lastRequestProcessingTime;maxTime;maxRequestUri;processingTime;requestCount;requestBytesReceived;requestBytesSent;requestProcessingTime
+    my @message;
+    push @message, $timestamp;
+    push @message, hostname;
+    push @message, $name;
+    $output->{'@fields'}{'Timestamp'} = $timestamp;
+    $output->{'@fields'}{'Hostname'}  = hostname;
+    $output->{'@fields'}{'Name'}      = $name;
+    foreach (
+      'errorCount',
+      'bytesReceived',
+      'bytesSent',
+      'lastRequestProcessingTime',
+      'maxTime',
+      'maxRequestUri',
+      'processingTime',
+      'requestCount',
+      'requestBytesReceived',
+      'requestBytesSent',
+      'requestProcessingTime',
+    ) {
+      push @message, $content->{'value'}{$entry}{$_};
+      $output->{'@fields'}{$_} = $content->{'value'}{$entry}{$_};
+    }
+    $output->{'@message'} = join(';', @message);
+    print OUTPUT $json->encode($output) . "\n";
+    unless ($global) {
+      foreach (
+        'bytesSent',
+        'bytesReceived',
+        'processingTime',
+        'errorCount',
+        'maxTime',
+        'requestCount',
+      ) {
+        $global->{$_} = $content->{'value'}{$entry}{'globalProcessor'}{$_};
+      }
+    }
+  }
+
+  # GlobalRequestProcessor
+  my @message = ();
+  push @message, $timestamp;
+  push @message, hostname;
+  push @message, 'globalProcessor';
+  $output->{'@source'} = $global_url;
+  $output->{'@fields'} = {};
+  $output->{'@fields'}{'Timestamp'} = $timestamp;
+  $output->{'@fields'}{'Hostname'}  = hostname;
+  $output->{'@fields'}{'Name'}      = 'globalProcessor';
+  foreach (
+    'errorCount',
+    'bytesReceived',
+    'bytesSent',
+    'lastRequestProcessingTime',
+    'maxTime',
+    'maxRequestUri',
+    'processingTime',
+    'requestCount',
+    'requestBytesReceived',
+    'requestBytesSent',
+    'requestProcessingTime',
+  ) {
+    if (exists $global->{$_}) {
+      push @message, $global->{$_};
+      $output->{'@fields'}{$_} = $global->{$_};
+    }
+    else {
+      push @message, '';
+      $output->{'@fields'}{$_} = '';
+    }
+  }
+  $output->{'@message'} = join(';', @message);
+  print OUTPUT $json->encode($output) . "\n";
+
+  close(OUTPUT);
+}
