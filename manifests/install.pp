@@ -32,6 +32,8 @@ define tomcat::install (
   if ! defined(File["${workspace}/${tarball}"]) {
     file { "${workspace}/${tarball}":
       ensure  => present,
+      owner   => 'root',
+      group   => 'root',
       mode    => '0444',
       source  => "${filestore}/${tarball}",
       require => File[$workspace],
@@ -50,9 +52,6 @@ define tomcat::install (
   }
   file { "${basedir}/${subdir}":
     ensure  => directory,
-    owner   => $user,
-    group   => $group,
-    recurse => true,
     require => Exec["tomcat-unpack-${user}"],
   }
   if $jolokia {
@@ -76,8 +75,6 @@ define tomcat::install (
   file { "${basedir}/${subdir}/bin/thread_dump":
     ensure  => present,
     mode    => '0555',
-    owner   => $user,
-    group   => $group,
     content => template('tomcat/thread_dump.erb'),
     require => File["${basedir}/${subdir}"],
   }

@@ -1,3 +1,8 @@
+0.6.5:
+
+* Avoid recursively scanning the Tomcat installation directory as this
+significantly increases execution time (by almost 5 minutes in my case).
+
 0.6.4:
 
 * Changed the access log pattern in the default server.xml to log the thread
