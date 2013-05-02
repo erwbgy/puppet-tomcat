@@ -80,7 +80,7 @@ else {
 
   open(OUTPUT, ">>$logfile") or die "$!\n";
 
-  # Timestamp;Hostname;HeapMemoryUsage-committed;HeapMemoryUsage-init;HeapMemoryUsage-max;HeapMemoryUsage-used;NonHeapMemoryUsage-committed;NonHeapMemoryUsage-init;NonHeapMemoryUsage-max;NonHeapMemoryUsage-used;FreePhysicalMemorySize;FreeSwapSpaceSize;CommittedVirtualMemorySize;CommittedVirtualMemorySize;ProcessCpuLoad;SystemCpuLoad;SystemLoadAverage;OpenFileDescriptorCount
+  # Timestamp;Hostname;HeapMemoryUsage-committed;HeapMemoryUsage-init;HeapMemoryUsage-max;HeapMemoryUsage-used;NonHeapMemoryUsage-committed;NonHeapMemoryUsage-init;NonHeapMemoryUsage-max;NonHeapMemoryUsage-used;FreePhysicalMemorySize;FreeSwapSpaceSize;CommittedVirtualMemorySize;ProcessCpuLoad;SystemCpuLoad;SystemLoadAverage;OpenFileDescriptorCount
   my @message;
   push @message, $timestamp;
   push @message, hostname;
