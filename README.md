@@ -1,3 +1,7 @@
+# _Unmaintained_
+
+I no longer use Puppet actively and this software has not been maintained for some time.
+
 # puppet-tomcat
 
 Puppet module to install Apache Tomcat and run instances as Runit services
